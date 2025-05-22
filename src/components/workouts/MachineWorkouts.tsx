@@ -8,237 +8,15 @@ import { fetchExercisesFromWger, transformWgerExercise } from '@/services/wgerAp
 import { Exercise } from '@/types/exercise';
 import { WorkoutData } from '@/types/workout';
 
-// Predefined machine workouts for immediate display
-const predefinedMachineWorkouts = [
-  {
-    id: 'machine-1',
-    title: 'Cardio Machine Circuit',
-    description: 'A complete cardio workout using various fitness machines',
-    duration: 30,
-    level: 'beginner',
-    calories_burned: 350,
-    exercises: [
-      {
-        name: 'Treadmill Run',
-        sets: 1,
-        reps: 1,
-        duration: 300,
-        restTime: 60,
-        isMachineExercise: true,
-        machineType: 'Treadmill',
-        youtubeId: 'tRd1e7RpHwQ',
-        instructions: ['Start with a 5-minute warm-up at a moderate pace', 'Increase speed for 30 seconds, then recover at moderate pace for 90 seconds', 'Repeat intervals 5 times', 'End with a 1-minute cooldown']
-      },
-      {
-        name: 'Elliptical Trainer',
-        sets: 1,
-        reps: 1,
-        duration: 300,
-        restTime: 60,
-        isMachineExercise: true,
-        machineType: 'Elliptical',
-        youtubeId: 'xQNX4zvx_HE',
-        instructions: ['Maintain a moderate resistance level', 'Focus on pushing and pulling with both arms and legs', 'Keep your core engaged throughout the movement', 'Try to maintain a steady rhythm']
-      },
-      {
-        name: 'Stationary Bike',
-        sets: 1,
-        reps: 1,
-        duration: 300,
-        restTime: 60,
-        isMachineExercise: true,
-        machineType: 'Exercise bike',
-        youtubeId: 'MXrkeZvt2nQ',
-        instructions: ['Start with moderate resistance', 'Increase resistance for 30 seconds, then decrease for 90 seconds of recovery', 'Repeat intervals 5 times', 'Maintain proper posture throughout']
-      },
-      {
-        name: 'Rowing Machine',
-        sets: 1,
-        reps: 1,
-        duration: 300,
-        restTime: 60,
-        isMachineExercise: true,
-        machineType: 'Rowing machine',
-        youtubeId: '1W_mP_ufb3M',
-        instructions: ['Begin with proper form: legs bent, back straight, arms extended', 'Push with legs first, then pull with arms, finish by leaning back slightly', 'Return to starting position by extending arms, leaning forward, then bending knees', 'Maintain a steady rhythm and controlled breathing']
-      }
-    ]
-  },
-  {
-    id: 'machine-2',
-    title: 'Resistance Machine Full Body',
-    description: 'Complete full body workout using weight machines',
-    duration: 45,
-    level: 'intermediate',
-    calories_burned: 400,
-    exercises: [
-      {
-        name: 'Leg Press Machine',
-        sets: 3,
-        reps: 12,
-        duration: 60,
-        restTime: 90,
-        isMachineExercise: true,
-        machineType: 'Leg press',
-        youtubeId: 'IZxyjW7MPJQ',
-        instructions: ['Adjust the seat so your knees are at 90 degrees when in starting position', 'Place feet shoulder-width apart on the platform', 'Push the platform away until legs are extended but not locked', 'Slowly return to starting position']
-      },
-      {
-        name: 'Chest Press Machine',
-        sets: 3,
-        reps: 12,
-        duration: 60,
-        restTime: 90,
-        isMachineExercise: true,
-        machineType: 'Chest press',
-        youtubeId: 'xUm0BiZCWlQ',
-        instructions: ['Adjust seat height so handles are at chest level', 'Grasp handles with a full grip', 'Push forward until arms are extended but not locked', 'Slowly return to starting position']
-      },
-      {
-        name: 'Lat Pulldown Machine',
-        sets: 3,
-        reps: 12,
-        duration: 60,
-        restTime: 90,
-        isMachineExercise: true,
-        machineType: 'Lat pulldown',
-        youtubeId: 'CAwf7n6Luuc',
-        instructions: ['Adjust thigh pad for stability', 'Grasp the bar with hands wider than shoulder width', 'Pull the bar down to chest level while keeping back straight', 'Slowly return to starting position with controlled movement']
-      },
-      {
-        name: 'Seated Cable Row',
-        sets: 3,
-        reps: 12,
-        duration: 60,
-        restTime: 90,
-        isMachineExercise: true,
-        machineType: 'Cable',
-        youtubeId: 'GZbfZ033f74',
-        instructions: ['Sit with knees slightly bent, grasp cable attachment', 'Keep back straight and pull the handle toward your lower abdomen', 'Squeeze shoulder blades together at the end of the movement', 'Slowly extend arms back to starting position']
-      },
-      {
-        name: 'Leg Extension Machine',
-        sets: 3,
-        reps: 12,
-        duration: 60,
-        restTime: 90,
-        isMachineExercise: true,
-        machineType: 'Leg extension',
-        youtubeId: 'YyvSfVjQeL0',
-        instructions: ['Sit on the machine with back against pad', 'Adjust the pad so it rests on top of your lower shin', 'Extend legs until knees are straight but not locked', 'Slowly lower weight back to starting position']
-      }
-    ]
-  },
-  {
-    id: 'machine-3',
-    title: 'Cable Machine Workout',
-    description: 'Multi-joint functional exercises using cable machines',
-    duration: 40,
-    level: 'advanced',
-    calories_burned: 450,
-    exercises: [
-      {
-        name: 'Cable Chest Fly',
-        sets: 3,
-        reps: 15,
-        duration: 60,
-        restTime: 60,
-        isMachineExercise: true,
-        machineType: 'Cable',
-        youtubeId: 'WEM9FCIPlxQ',
-        instructions: ['Stand in the center of the cable machine with feet shoulder-width apart', 'Hold cable handles with arms extended to sides', 'Bring handles together in front of chest with a slight bend in elbows', 'Slowly return to starting position']
-      },
-      {
-        name: 'Cable Tricep Pushdown',
-        sets: 3,
-        reps: 15,
-        duration: 60,
-        restTime: 60,
-        isMachineExercise: true,
-        machineType: 'Cable',
-        youtubeId: '2-LAMcpzODU',
-        instructions: ['Stand facing the cable machine with feet shoulder-width apart', 'Grasp the rope attachment with palms facing each other', 'Keep elbows close to body and push down until arms are fully extended', 'Slowly return to starting position']
-      },
-      {
-        name: 'Cable Bicep Curl',
-        sets: 3,
-        reps: 15,
-        duration: 60,
-        restTime: 60,
-        isMachineExercise: true,
-        machineType: 'Cable',
-        youtubeId: 'NFzTWp2qpiE',
-        instructions: ['Stand facing the cable machine with feet shoulder-width apart', 'Grasp the handle with palms facing up', 'Keep elbows close to sides and curl up toward chest', 'Slowly lower to starting position']
-      },
-      {
-        name: 'Cable Pull Through',
-        sets: 3,
-        reps: 15,
-        duration: 60,
-        restTime: 60,
-        isMachineExercise: true,
-        machineType: 'Cable',
-        youtubeId: 'J9KaUQsAyVM',
-        instructions: ['Stand facing away from the cable machine with feet shoulder-width apart', 'Bend forward and grasp the rope attachment between legs', 'Keeping back straight, thrust hips forward until standing upright', 'Slowly return to starting position']
-      },
-      {
-        name: 'Cable Wood Chop',
-        sets: 3,
-        reps: 15,
-        duration: 60,
-        restTime: 60,
-        isMachineExercise: true,
-        machineType: 'Cable',
-        youtubeId: 'J56VM_RTImQ',
-        instructions: ['Stand with side to the cable machine', 'Grasp handle with both hands above shoulder', 'Pull diagonally across body toward opposite knee', 'Control the return to starting position', 'Complete all reps, then switch sides']
-      }
-    ]
-  }
-];
-
-// Dynamic machine workouts that will be fetched from API
-const dynamicMachineWorkoutTemplates = [
-  {
-    id: 'upper-body-machines',
-    title: 'Upper Body Machine Circuit',
-    description: 'Target all upper body muscles using gym machines',
-    duration: 50,
-    level: 'intermediate',
-    calories_burned: 380,
-    equipmentKeywords: ['machine', 'cable', 'press', 'pulldown', 'fly'],
-    bodyPartKeywords: ['chest', 'back', 'shoulders', 'arms'],
-    maxExercises: 6
-  },
-  {
-    id: 'lower-body-machines',
-    title: 'Lower Body Machine Strength',
-    description: 'Build lower body strength with gym machines',
-    duration: 45,
-    level: 'intermediate',
-    calories_burned: 420,
-    equipmentKeywords: ['machine', 'press', 'extension', 'curl', 'abductor', 'adductor'],
-    bodyPartKeywords: ['legs', 'quads', 'hamstrings', 'glutes', 'calves'],
-    maxExercises: 5
-  },
-  {
-    id: 'full-body-machine-circuit',
-    title: 'Full Body Machine Circuit',
-    description: 'Efficient full body workout using various machines',
-    duration: 60,
-    level: 'beginner',
-    calories_burned: 450,
-    equipmentKeywords: ['machine', 'cable', 'press', 'pulldown', 'extension'],
-    bodyPartKeywords: ['chest', 'back', 'legs', 'shoulders', 'arms'],
-    maxExercises: 8
-  }
-];
+// Import predefined workouts and templates from machineWorkoutData
+import { predefinedMachineWorkouts, dynamicMachineWorkoutTemplates } from './machineWorkoutData';
 
 interface MachineWorkoutsProps {
-  onStartWorkout: (workout: any) => void;
+  onStartWorkout: (workout: WorkoutData) => void;
 }
 
 const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => {
-  const [workouts, setWorkouts] = useState<WorkoutData[]>(predefinedMachineWorkouts as WorkoutData[]);
+  const [workouts, setWorkouts] = useState<WorkoutData[]>(predefinedMachineWorkouts as unknown as WorkoutData[]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setLoadingError] = useState<string | null>(null);
 
@@ -301,7 +79,7 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
               restTime: ex.restTime || 60
             }));
           
-          // If we don't have enough exercises, pad with predefined ones
+          // If we don't have enough exercises, skip this template
           if (workoutExercises.length < 3) {
             return null; // Skip this template as we don't have enough exercises
           }
@@ -309,13 +87,14 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
           return {
             ...template,
             exercises: workoutExercises,
-            image: getBestExerciseImageUrlSync(workoutExercises[0])
+            image: getBestExerciseImageUrlSync(workoutExercises[0]),
+            type: 'machine' // Ensure type property is added
           };
-        }).filter(Boolean); // Remove any null templates
+        }).filter(Boolean) as unknown as WorkoutData[]; // Cast filtered results to WorkoutData[]
         
         // Combine with predefined workouts
         if (apiWorkouts && apiWorkouts.length > 0) {
-          setWorkouts([...predefinedMachineWorkouts as WorkoutData[], ...apiWorkouts as WorkoutData[]]);
+          setWorkouts([...predefinedMachineWorkouts as unknown as WorkoutData[], ...apiWorkouts]);
         }
       } catch (error) {
         console.error('Error fetching machine exercises:', error);
@@ -331,14 +110,18 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
   // Prepare workouts with images
   const workoutsWithImages = workouts.map(workout => {
     // Get first exercise for thumbnail if not already set
-    if (!workout.image && workout.exercises && workout.exercises.length > 0) {
+    if (!workout.image && workout.exercises && Array.isArray(workout.exercises) && workout.exercises.length > 0) {
       const firstExercise = workout.exercises[0];
       return {
         ...workout,
+        type: workout.type || 'machine', // Ensure type property is set
         image: getBestExerciseImageUrlSync(firstExercise)
       };
     }
-    return workout;
+    return {
+      ...workout,
+      type: workout.type || 'machine' // Ensure type property is set
+    };
   });
   
   return (
@@ -363,8 +146,8 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
                   src={workout.image || 'https://musclewiki.com/media/uploads/male-cardio-treadmill-run-side.gif'} 
                   alt={`${workout.title} thumbnail`} 
                   className="w-full h-full object-cover object-center"
-                  onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                    const target = e.currentTarget;
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
                     target.src = 'https://musclewiki.com/media/uploads/male-cardio-treadmill-run-side.gif';
                   }}
                 />
@@ -375,14 +158,14 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
               <CardContent className="flex-grow">
                 <p className="text-gray-600 mb-3">{workout.description}</p>
                 <div className="flex justify-between text-sm text-gray-500 mb-3">
-                  <span>{workout.level.charAt(0).toUpperCase() + workout.level.slice(1)}</span>
+                  <span>{workout.level?.charAt(0).toUpperCase() + workout.level?.slice(1) || 'Beginner'}</span>
                   <span>{workout.duration} min</span>
                   <span>{workout.calories_burned} cal</span>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-1">Equipment:</h4>
                   <ul className="text-sm text-gray-600">
-                    {Array.from(new Set(workout.exercises.map((e: any) => 
+                    {Array.isArray(workout.exercises) && Array.from(new Set(workout.exercises.map((e: any) => 
                       e.machineType || e.equipment || e.name.split(' ')[0]))).map((equipment: string, i: number) => (
                       <li key={i}>• {equipment}</li>
                     ))}
