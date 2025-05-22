@@ -51,7 +51,11 @@ const WorkoutsList: React.FC<WorkoutsListProps> = ({
         ...exercise,
         gifUrl: getBestExerciseImageUrlSync(exercise),
         youtubeId: getExerciseYoutubeId(exercise),
-        displayPreference: exercise.displayPreference || 'auto'
+        displayPreference: exercise.displayPreference || 'auto',
+        isMachineExercise: exercise.isMachineExercise || 
+          (exercise.equipment && exercise.equipment.toLowerCase().includes('machine')),
+        machineType: exercise.machineType || 
+          (exercise.equipment && exercise.equipment.toLowerCase().includes('machine') ? exercise.equipment : undefined)
       }));
     }
     
@@ -65,7 +69,11 @@ const WorkoutsList: React.FC<WorkoutsListProps> = ({
               ...exercise,
               gifUrl: getBestExerciseImageUrlSync(exercise),
               youtubeId: getExerciseYoutubeId(exercise),
-              displayPreference: exercise.displayPreference || 'auto'
+              displayPreference: exercise.displayPreference || 'auto',
+              isMachineExercise: exercise.isMachineExercise || 
+                (exercise.equipment && exercise.equipment.toLowerCase().includes('machine')),
+              machineType: exercise.machineType || 
+                (exercise.equipment && exercise.equipment.toLowerCase().includes('machine') ? exercise.equipment : undefined)
             }))
           };
         }

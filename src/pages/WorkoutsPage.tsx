@@ -114,7 +114,7 @@ const WorkoutsPage = () => {
             <MachineWorkouts onStartWorkout={handleStartWorkout} />
           </div>
           
-          <h2 className="text-2xl font-bold mb-8">Recommended Workouts</h2>
+          <h2 className="text-2xl font-bold mt-16 mb-8">Recommended Workouts</h2>
           
           <WorkoutsList 
             workouts={filteredWorkouts}
