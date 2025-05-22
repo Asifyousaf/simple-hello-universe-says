@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader2 } from 'lucide-react';
-import { getBestExerciseImageUrlSync } from '@/utils/exerciseImageUtils';
+import { getBestExerciseImageUrlSync, getExerciseYoutubeId } from '@/utils/exerciseImageUtils';
 import { fetchExercisesFromWger, transformWgerExercise } from '@/services/wgerApiService';
 import { Exercise } from '@/types/exercise';
 import { WorkoutData } from '@/types/workout';
@@ -16,7 +16,10 @@ interface MachineWorkoutsProps {
 }
 
 const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => {
-  const [workouts, setWorkouts] = useState<WorkoutData[]>(predefinedMachineWorkouts as unknown as WorkoutData[]);
+  const [workouts, setWorkouts] = useState<WorkoutData[]>(predefinedMachineWorkouts.map(workout => ({
+    ...workout,
+    type: 'machine' // Ensure all predefined workouts have the type property
+  })) as WorkoutData[]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setLoadingError] = useState<string | null>(null);
 
@@ -68,16 +71,27 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
             return matchesEquipment && matchesBodyPart;
           });
           
-          // Take a subset of exercises up to maxExercises
+          // Take a subset of exercises up to maxExercises and add YouTube IDs
           const workoutExercises = filteredExercises
             .slice(0, template.maxExercises)
-            .map((ex: Exercise) => ({
-              ...ex,
-              sets: 3,
-              reps: 12,
-              duration: ex.duration || 60,
-              restTime: ex.restTime || 60
-            }));
+            .map((ex: Exercise) => {
+              // Ensure each exercise has a YouTube ID
+              const youtubeId = ex.youtubeId || getExerciseYoutubeId({
+                name: ex.name,
+                equipment: ex.equipment,
+                bodyPart: ex.bodyPart,
+                target: ex.target
+              });
+              
+              return {
+                ...ex,
+                sets: 3,
+                reps: 12,
+                duration: ex.duration || 60,
+                restTime: ex.restTime || 60,
+                youtubeId: youtubeId
+              };
+            });
           
           // If we don't have enough exercises, skip this template
           if (workoutExercises.length < 3) {
@@ -90,11 +104,16 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
             image: getBestExerciseImageUrlSync(workoutExercises[0]),
             type: 'machine' // Ensure type property is added
           };
-        }).filter(Boolean) as unknown as WorkoutData[]; // Cast filtered results to WorkoutData[]
+        }).filter(Boolean) as unknown as WorkoutData[]; // Filter out nulls and cast to WorkoutData[]
         
-        // Combine with predefined workouts
+        // Combine with predefined workouts - ensure all have proper type
         if (apiWorkouts && apiWorkouts.length > 0) {
-          setWorkouts([...predefinedMachineWorkouts as unknown as WorkoutData[], ...apiWorkouts]);
+          const predefinedWithType = predefinedMachineWorkouts.map(workout => ({
+            ...workout,
+            type: 'machine'
+          })) as WorkoutData[];
+          
+          setWorkouts([...predefinedWithType, ...apiWorkouts]);
         }
       } catch (error) {
         console.error('Error fetching machine exercises:', error);
@@ -107,8 +126,34 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
     fetchMachineExercises();
   }, []);
   
-  // Prepare workouts with images
+  // Prepare workouts with images and ensure they all have YouTube IDs
   const workoutsWithImages = workouts.map(workout => {
+    // Ensure all exercises have YouTube IDs
+    if (workout.exercises && Array.isArray(workout.exercises)) {
+      const updatedExercises = workout.exercises.map(exercise => {
+        if (!exercise.youtubeId) {
+          // Try to get a YouTube ID for this exercise
+          const youtubeId = getExerciseYoutubeId({
+            name: exercise.name,
+            equipment: exercise.equipment,
+            bodyPart: exercise.bodyPart,
+            target: exercise.target
+          });
+          
+          return {
+            ...exercise,
+            youtubeId: youtubeId || undefined
+          };
+        }
+        return exercise;
+      });
+      
+      workout = {
+        ...workout,
+        exercises: updatedExercises
+      };
+    }
+    
     // Get first exercise for thumbnail if not already set
     if (!workout.image && workout.exercises && Array.isArray(workout.exercises) && workout.exercises.length > 0) {
       const firstExercise = workout.exercises[0];

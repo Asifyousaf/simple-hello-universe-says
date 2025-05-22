@@ -10,7 +10,7 @@ interface WorkoutHeaderProps {
 
 const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({ onStartFirstWorkout, firstWorkout }) => {
   return (
-    <div className="py-4 bg-gradient-to-br from-blue-500 to-blue-700 text-white">
+    <div className="py-4 bg-gradient-to-br from-purple-500 to-purple-700 text-white">
       <div className="container mx-auto px-4 py-3">
         <h1 className="text-2xl font-bold mb-2">Personalized Workout Plans</h1>
         <p className="text-sm max-w-2xl mb-3">
@@ -18,7 +18,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({ onStartFirstWorkout, firs
         </p>
         <button 
           onClick={() => onStartFirstWorkout(firstWorkout)}
-          className="bg-white text-blue-600 px-3 py-1.5 rounded-full font-medium hover:bg-gray-100 transition-colors flex items-center text-sm"
+          className="bg-white text-purple-600 px-3 py-1.5 rounded-full font-medium hover:bg-gray-100 transition-colors flex items-center text-sm"
         >
           <Play size={14} className="mr-1" />
           Start Your First Workout

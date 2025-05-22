@@ -1,13 +1,14 @@
 
 import React, { useEffect, useState } from 'react';
-import { Play, Pause, Video, Image } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import { Play, Pause, Video, Image, ChevronRight } from 'lucide-react';
+import { Button } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import ExerciseDemonstration from './ExerciseDemonstration';
 import ExerciseInstructions from './ExerciseInstructions';
 import TimerDisplay from './TimerDisplay';
 import { getBestExerciseImageUrlSync } from '@/utils/exerciseImageUtils';
 import { useToast } from "@/hooks/use-toast";
+import { Exercise } from '@/types/workout';
 
 interface WorkoutExerciseViewProps {
   exercise: any;
@@ -18,6 +19,7 @@ interface WorkoutExerciseViewProps {
   isPaused: boolean;
   onTogglePause: () => void;
   onComplete: () => void;
+  nextExercises?: Exercise[]; // Add next exercises prop
 }
 
 // Rest time image URL - high quality image of someone taking a break
@@ -31,7 +33,8 @@ const WorkoutExerciseView: React.FC<WorkoutExerciseViewProps> = ({
   isRest,
   isPaused,
   onTogglePause,
-  onComplete
+  onComplete,
+  nextExercises = [] // Default to empty array
 }) => {
   const { toast } = useToast();
   const [backupImage, setBackupImage] = useState<string | null>(null);
@@ -73,6 +76,14 @@ const WorkoutExerciseView: React.FC<WorkoutExerciseViewProps> = ({
   
   // Toggle display mode between video and photo
   const toggleDisplayMode = () => {
+    if (!youtubeId) {
+      toast({
+        title: "No video available",
+        description: "Sorry, this exercise doesn't have a video demonstration"
+      });
+      return;
+    }
+    
     const newMode = displayMode === 'video' ? 'photo' : 'video';
     setDisplayMode(newMode);
     
@@ -80,7 +91,7 @@ const WorkoutExerciseView: React.FC<WorkoutExerciseViewProps> = ({
     toast({
       title: `Switched to ${newMode} mode`,
       description: newMode === 'video' ? 
-        youtubeId ? 'Showing video demonstration' : 'No video available, showing animation instead' : 
+        'Showing video demonstration' : 
         'Showing photo demonstration'
     });
   };
@@ -177,7 +188,7 @@ const WorkoutExerciseView: React.FC<WorkoutExerciseViewProps> = ({
               />
               
               {/* Display mode toggle button - Only show for exercises, not rest */}
-              {!isRest && youtubeId && (
+              {!isRest && (
                 <div className="absolute top-2 right-2">
                   <Button 
                     onClick={toggleDisplayMode} 
@@ -188,7 +199,7 @@ const WorkoutExerciseView: React.FC<WorkoutExerciseViewProps> = ({
                     {displayMode === 'photo' ? (
                       <>
                         <Video className="h-4 w-4 mr-1" />
-                        Video
+                        {youtubeId ? 'Video' : 'No Video'}
                       </>
                     ) : (
                       <>
@@ -205,6 +216,39 @@ const WorkoutExerciseView: React.FC<WorkoutExerciseViewProps> = ({
           <div>
             <ExerciseInstructions instructions={getInstructions()} />
           </div>
+          
+          {/* New section: Coming up next */}
+          {nextExercises && nextExercises.length > 0 && (
+            <div className="mt-4 bg-gray-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3 flex items-center">
+                <ChevronRight className="mr-2 text-purple-600" />
+                Coming Up Next
+              </h3>
+              <div className="space-y-3">
+                {nextExercises.slice(0, 2).map((nextExercise, index) => (
+                  <div key={index} className="flex items-center border-b border-gray-100 pb-2 last:border-0">
+                    <div className="h-10 w-10 bg-gray-100 rounded-md overflow-hidden mr-3 flex-shrink-0">
+                      <img 
+                        src={getBestExerciseImageUrlSync(nextExercise)} 
+                        alt={nextExercise.name}
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = 'https://musclewiki.com/media/uploads/male-cardio-treadmill-run-side.gif';
+                        }}
+                      />
+                    </div>
+                    <div className="flex-grow">
+                      <p className="font-medium text-sm">{nextExercise.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {nextExercise.sets} sets × {nextExercise.reps} reps
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         
         <div className="md:col-span-5">

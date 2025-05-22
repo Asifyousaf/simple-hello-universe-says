@@ -64,6 +64,16 @@ const WorkoutSession = ({ workout, onComplete, onCancel }: WorkoutSessionProps) 
     );
   }
 
+  // Get next exercises for preview
+  const getNextExercises = () => {
+    if (currentExerciseIndex >= exercises.length - 1) {
+      return [];
+    }
+    
+    // Return the next 2-3 exercises
+    return exercises.slice(currentExerciseIndex + 1, currentExerciseIndex + 4);
+  };
+
   // Ensure current exercise has a valid image URL
   const getExerciseImageUrl = (exercise) => {
     if (!exercise) return null;
@@ -122,6 +132,7 @@ const WorkoutSession = ({ workout, onComplete, onCancel }: WorkoutSessionProps) 
               isRest={isResting}
               isPaused={isPaused}
               onTogglePause={handlePlayPause}
+              nextExercises={getNextExercises()} // Pass next exercises
               onComplete={isResting ? 
                 () => {
                   setIsResting(false);
