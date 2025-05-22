@@ -10,6 +10,7 @@ export const predefinedMachineWorkouts = [
     duration: 30,
     level: 'beginner',
     calories_burned: 350,
+    type: 'machine', // Added required type property
     exercises: [
       {
         name: 'Treadmill Run',
@@ -64,6 +65,7 @@ export const predefinedMachineWorkouts = [
     duration: 45,
     level: 'intermediate',
     calories_burned: 400,
+    type: 'machine', // Added required type property
     exercises: [
       {
         name: 'Leg Press Machine',
@@ -129,6 +131,7 @@ export const predefinedMachineWorkouts = [
     duration: 40,
     level: 'advanced',
     calories_burned: 450,
+    type: 'machine', // Added required type property
     exercises: [
       {
         name: 'Cable Chest Fly',
@@ -198,6 +201,7 @@ export const dynamicMachineWorkoutTemplates = [
     duration: 50,
     level: 'intermediate',
     calories_burned: 380,
+    type: 'machine', // Added required type property
     equipmentKeywords: ['machine', 'cable', 'press', 'pulldown', 'fly'],
     bodyPartKeywords: ['chest', 'back', 'shoulders', 'arms'],
     maxExercises: 6
@@ -209,6 +213,7 @@ export const dynamicMachineWorkoutTemplates = [
     duration: 45,
     level: 'intermediate',
     calories_burned: 420,
+    type: 'machine', // Added required type property
     equipmentKeywords: ['machine', 'press', 'extension', 'curl', 'abductor', 'adductor'],
     bodyPartKeywords: ['legs', 'quads', 'hamstrings', 'glutes', 'calves'],
     maxExercises: 5
@@ -220,6 +225,7 @@ export const dynamicMachineWorkoutTemplates = [
     duration: 60,
     level: 'beginner',
     calories_burned: 450,
+    type: 'machine', // Added required type property
     equipmentKeywords: ['machine', 'cable', 'press', 'pulldown', 'extension'],
     bodyPartKeywords: ['chest', 'back', 'legs', 'shoulders', 'arms'],
     maxExercises: 8

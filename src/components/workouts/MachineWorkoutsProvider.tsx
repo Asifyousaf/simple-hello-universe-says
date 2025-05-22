@@ -29,7 +29,7 @@ const MachineWorkoutsProvider: React.FC<MachineWorkoutsProviderProps> = ({
         setLoadingError(null);
         
         // Start with predefined workouts
-        const allWorkouts = [...predefinedMachineWorkouts] as WorkoutData[];
+        const allWorkouts = predefinedMachineWorkouts as unknown as WorkoutData[];
         
         // Prepare workouts with images
         const workoutsWithImages = allWorkouts.map(workout => {
@@ -106,13 +106,14 @@ const MachineWorkoutsProvider: React.FC<MachineWorkoutsProviderProps> = ({
           return {
             ...template,
             exercises: workoutExercises,
-            image: getBestExerciseImageUrlSync(workoutExercises[0])
+            image: getBestExerciseImageUrlSync(workoutExercises[0]),
+            type: 'machine' // Ensure type property is added
           };
-        }).filter(Boolean); // Remove any null templates
+        }).filter(Boolean) as unknown as WorkoutData[]; // Cast filtered results to WorkoutData[]
         
         // Combine with predefined workouts
         if (apiWorkouts && apiWorkouts.length > 0) {
-          const allApiWorkouts = [...allWorkouts, ...apiWorkouts as WorkoutData[]];
+          const allApiWorkouts = [...allWorkouts, ...apiWorkouts];
           
           // Notify parent component of the updated workouts
           onWorkoutsLoaded(allApiWorkouts);

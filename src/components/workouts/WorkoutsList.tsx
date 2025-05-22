@@ -45,6 +45,11 @@ const WorkoutsList: React.FC<WorkoutsListProps> = ({
   const prepareWorkout = (workout: WorkoutData): WorkoutData => {
     if (!workout) return workout;
     
+    // Ensure workout has a type property
+    if (!workout.type) {
+      workout.type = workout.level === 'custom' ? 'custom' : 'standard';
+    }
+    
     // Process exercises to ensure they have proper image URLs and YouTube IDs
     if (Array.isArray(workout.exercises)) {
       workout.exercises = workout.exercises.map((exercise: any) => ({
@@ -65,6 +70,7 @@ const WorkoutsList: React.FC<WorkoutsListProps> = ({
         if (Array.isArray(packItem.exercises)) {
           return {
             ...packItem,
+            type: packItem.type || 'standard', // Ensure packItems have type property
             exercises: packItem.exercises.map((exercise: any) => ({
               ...exercise,
               gifUrl: getBestExerciseImageUrlSync(exercise),
