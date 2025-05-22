@@ -1,5 +1,5 @@
-
 // This utility provides reliable exercise animations from API sources
+import { Exercise } from '@/types/exercise';
 
 // Map of exercise YouTube IDs for common exercises
 const exerciseYoutubeIDs: Record<string, string> = {
@@ -21,6 +21,23 @@ const exerciseYoutubeIDs: Record<string, string> = {
   "pull up": "eGo4IYlbE5g",
   "pull-up": "eGo4IYlbE5g",
   "bench press": "rT7DgCr-3pg",
+  // Added machine-based exercises
+  "treadmill": "9L1-a9T7QQM", 
+  "elliptical": "xQNpaW5fzjA",
+  "stationary bike": "fYsF7TwJPVs",
+  "rowing machine": "H0r_ZPXJLtg",
+  "leg press": "IZxyjW7MPJQ",
+  "chest press": "xQMFQT9pxqY",
+  "lat pulldown": "CAwf7n6Luuc",
+  "cable row": "GZbfZ033f74",
+  "leg extension": "YyvSfVjQeL0",
+  "leg curl": "1Tq3QdYUuHs",
+  "pec deck": "Qz8Nl4X-UPw",
+  "cable fly": "WEM9FCIPlcQ",
+  "cable tricep pushdown": "2-LAMcpzODU",
+  "cable bicep curl": "NFzTWp2qbIw",
+  "smith machine squat": "Fk8rUQyQga4",
+  "hack squat": "EdtaJRBqwes"
 };
 
 // MuscleWiki image URLs for common exercises
@@ -48,6 +65,23 @@ const muscleWikiImages: Record<string, string> = {
   "bicycle crunch": "https://musclewiki.com/media/uploads/male-bicycle-crunch-side.gif",
   "glute bridge": "https://musclewiki.com/media/uploads/male-glute-bridge-side.gif",
   "russian twist": "https://musclewiki.com/media/uploads/male-russian-twist-front.gif",
+  // Added machine-based exercises
+  "leg press": "https://musclewiki.com/media/uploads/male-legpress-side.gif",
+  "chest press": "https://musclewiki.com/media/uploads/male-machine-chestpress-side.gif",
+  "lat pulldown": "https://musclewiki.com/media/uploads/male-cable-lat-pulldown-side.gif",
+  "cable row": "https://musclewiki.com/media/uploads/male-cable-seatedrow-side.gif",
+  "leg extension": "https://musclewiki.com/media/uploads/male-leg-extension-side.gif",
+  "leg curl": "https://musclewiki.com/media/uploads/male-leg-curl-side.gif",
+  "cable fly": "https://musclewiki.com/media/uploads/male-cable-fly-side.gif",
+  "cable tricep pushdown": "https://musclewiki.com/media/uploads/male-cable-pushdown-side.gif",
+  "cable bicep curl": "https://musclewiki.com/media/uploads/male-cable-bicep-curl-side.gif",
+  "hack squat": "https://musclewiki.com/media/uploads/male-machine-hack-squat-side.gif",
+  "smith machine squat": "https://musclewiki.com/media/uploads/male-smith-squat-side.gif",
+  "pec deck": "https://musclewiki.com/media/uploads/male-machine-chest-fly-side.gif",
+  "treadmill run": "https://musclewiki.com/media/uploads/male-cardio-treadmill-run-side.gif",
+  "stationary bike": "https://musclewiki.com/media/uploads/male-cardio-exercise-bike-side.gif",
+  "elliptical": "https://musclewiki.com/media/uploads/male-cardio-elliptical-side.gif",
+  "rowing machine": "https://musclewiki.com/media/uploads/male-cardio-rowing-machine-side.gif"
 };
 
 // WorkoutLabs image URLs for additional exercises
@@ -61,8 +95,20 @@ const workoutLabsImages: Record<string, string> = {
   "leg raise": "https://workoutlabs.com/wp-content/uploads/watermarked/Lying_Straight_Leg_Raises.gif",
   "wall sit": "https://workoutlabs.com/wp-content/uploads/watermarked/Wall_Sit.gif",
   "bird dog": "https://workoutlabs.com/wp-content/uploads/watermarked/Bird_dogs1.gif",
-  "kettlebell swing": "https://workoutlabs.com/wp-content/uploads/watermarked/Kettlebell_Swing1.gif"
+  "kettlebell swing": "https://workoutlabs.com/wp-content/uploads/watermarked/Kettlebell_Swing1.gif",
+  // Added machine-based exercises
+  "treadmill": "https://workoutlabs.com/wp-content/uploads/watermarked/Treadmill_Running1.gif",
+  "stationary bike": "https://workoutlabs.com/wp-content/uploads/watermarked/Stationary_Bike1.gif",
+  "rowing machine": "https://workoutlabs.com/wp-content/uploads/watermarked/Rowing_Machine1.gif",
+  "elliptical": "https://workoutlabs.com/wp-content/uploads/watermarked/Elliptical_Trainer1.gif",
+  "cable chest fly": "https://workoutlabs.com/wp-content/uploads/watermarked/Cable_Chest_Fly1.gif",
+  "hamstring curl": "https://workoutlabs.com/wp-content/uploads/watermarked/Seated_Leg_Curl_Machine.gif",
+  "lat pulldown": "https://workoutlabs.com/wp-content/uploads/watermarked/Lat_Pulldown1.gif",
+  "chest press machine": "https://workoutlabs.com/wp-content/uploads/watermarked/Chest_Press_Machine.gif"
 };
+
+// API endpoints for MuscleWiki API
+const MUSCLEWIKI_API_BASE = "https://musclewiki.com/api/exercises";
 
 // An array of reliable workout GIF animations as fallbacks
 const reliableAnimations = [
@@ -75,7 +121,13 @@ const reliableAnimations = [
   "https://media1.tenor.com/m/0SO6-iX_RRYAAAAd/shoulder.gif",
   "https://media1.tenor.com/m/Jet8SkE99wYAAAAd/tricep.gif",
   "https://media1.tenor.com/m/K6_2KpT9MhQAAAAC/plank-exercise.gif",
-  "https://media1.tenor.com/m/OF44QmJrRwkAAAAd/sit-ups.gif"
+  "https://media1.tenor.com/m/OF44QmJrRwkAAAAd/sit-ups.gif",
+  // Add more machine-based exercise animations
+  "https://media1.tenor.com/m/Kqmj7EdNpnAAAAAd/treadmill.gif",
+  "https://media1.tenor.com/m/vXeUmbmvFpwAAAAC/workout-gym.gif", 
+  "https://media1.tenor.com/m/jlG-oNo_Q5QAAAAC/rowing-machine-workout.gif",
+  "https://media1.tenor.com/m/3UtJ9tbbM8EAAAAd/elliptical-cardio.gif",
+  "https://media1.tenor.com/m/_dv3zE6PBToAAAAC/chest-press-workout.gif"
 ];
 
 // Map common exercise keywords to animation indices
@@ -103,7 +155,21 @@ const exerciseKeywordMap: Record<string, number> = {
   'core': 8,
   'sit': 9,
   'ab': 9,
-  'crunch': 9
+  'crunch': 9,
+  // Add machine-based keywords
+  'treadmill': 10,
+  'run': 10,
+  'stair': 10,
+  'bike': 11,
+  'cycle': 11,
+  'stationary': 11,
+  'row': 12,
+  'rowing': 12,
+  'elliptical': 13,
+  'cross': 13,
+  'machine': 14,
+  'press': 14,
+  'cable': 14
 };
 
 interface ExerciseInfo {
@@ -112,10 +178,35 @@ interface ExerciseInfo {
   target?: string;
   id?: string | number;
   displayPreference?: 'video' | 'photo' | 'auto';
+  equipment?: string;
 }
 
 // Cache for exercise images to avoid repeated lookups
 const exerciseImageCache: Record<string, string> = {};
+
+// Function to query the MuscleWiki API
+export const queryMuscleWikiApi = async (exerciseName: string): Promise<string | null> => {
+  try {
+    // First try to search by name
+    const searchUrl = `${MUSCLEWIKI_API_BASE}/search?query=${encodeURIComponent(exerciseName)}`;
+    const searchResponse = await fetch(searchUrl);
+    if (!searchResponse.ok) {
+      throw new Error(`Failed to search MuscleWiki: ${searchResponse.status}`);
+    }
+    
+    const searchData = await searchResponse.json();
+    if (searchData && searchData.length > 0) {
+      const firstResult = searchData[0];
+      // MuscleWiki API returns URL in the 'video' field for animated GIFs
+      return firstResult.video || null;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error querying MuscleWiki API:', error);
+    return null;
+  }
+};
 
 /**
  * Gets the best animation URL for an exercise synchronously
@@ -169,7 +260,7 @@ export const getBestExerciseImageUrlSync = (exercise: ExerciseInfo): string => {
     // Use exercise name to find matching keywords for fallback animations
     for (const [keyword, index] of Object.entries(exerciseKeywordMap)) {
       if (name.includes(keyword)) {
-        return reliableAnimations[index];
+        return reliableAnimations[index < reliableAnimations.length ? index : 0];
       }
     }
     
@@ -179,12 +270,29 @@ export const getBestExerciseImageUrlSync = (exercise: ExerciseInfo): string => {
     return reliableAnimations[index];
   }
   
+  // If no name, try using equipment to determine if it's a machine exercise
+  if (exercise.equipment) {
+    const equipment = exercise.equipment.toLowerCase();
+    if (equipment.includes('machine') || 
+        equipment.includes('cable') || 
+        equipment.includes('treadmill') ||
+        equipment.includes('bike') ||
+        equipment.includes('elliptical')) {
+      // Select a machine-specific animation
+      for (const [keyword, index] of Object.entries(exerciseKeywordMap)) {
+        if (equipment.includes(keyword) && index >= 10) { // Indices 10+ are for machines
+          return reliableAnimations[index < reliableAnimations.length ? index : 0];
+        }
+      }
+    }
+  }
+  
   // If no name, try using bodyPart or target
   if (exercise.bodyPart) {
     const bodyPart = exercise.bodyPart.toLowerCase();
     for (const [keyword, index] of Object.entries(exerciseKeywordMap)) {
       if (bodyPart.includes(keyword)) {
-        return reliableAnimations[index];
+        return reliableAnimations[index < reliableAnimations.length ? index : 0];
       }
     }
   }
@@ -193,7 +301,7 @@ export const getBestExerciseImageUrlSync = (exercise: ExerciseInfo): string => {
     const target = exercise.target.toLowerCase();
     for (const [keyword, index] of Object.entries(exerciseKeywordMap)) {
       if (target.includes(keyword)) {
-        return reliableAnimations[index];
+        return reliableAnimations[index < reliableAnimations.length ? index : 0];
       }
     }
   }
@@ -232,6 +340,23 @@ export const getExerciseYoutubeId = (exercise: ExerciseInfo): string | undefined
       return id;
     }
   }
+
+  // Check if it's a machine exercise based on equipment
+  if (exercise.equipment) {
+    const equipment = exercise.equipment.toLowerCase();
+    if (equipment.includes('machine') || 
+        equipment.includes('cable') || 
+        equipment.includes('treadmill') ||
+        equipment.includes('bike') ||
+        equipment.includes('elliptical')) {
+      // Try to match based on equipment + exercise name
+      for (const [keyword, id] of Object.entries(exerciseYoutubeIDs)) {
+        if (equipment.includes(keyword)) {
+          return id;
+        }
+      }
+    }
+  }
   
   return undefined;
 };
@@ -263,6 +388,17 @@ export const searchExerciseImage = async (exerciseName: string): Promise<string 
     }
   }
   
+  // Try MuscleWiki API
+  try {
+    const muscleWikiUrl = await queryMuscleWikiApi(name);
+    if (muscleWikiUrl) {
+      exerciseImageCache[name] = muscleWikiUrl;
+      return muscleWikiUrl;
+    }
+  } catch (error) {
+    console.error('Error querying MuscleWiki API:', error);
+  }
+  
   // Check WorkoutLabs
   if (workoutLabsImages[name]) {
     exerciseImageCache[name] = workoutLabsImages[name];
@@ -280,7 +416,7 @@ export const searchExerciseImage = async (exerciseName: string): Promise<string 
   // Use fallback animations as last resort
   for (const [keyword, index] of Object.entries(exerciseKeywordMap)) {
     if (name.includes(keyword)) {
-      return reliableAnimations[index];
+      return reliableAnimations[index < reliableAnimations.length ? index : 0];
     }
   }
   

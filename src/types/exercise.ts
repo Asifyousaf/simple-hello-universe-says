@@ -16,4 +16,7 @@ export interface Exercise {
   wikiImageUrl?: string;  // Added for Wiki API images
   youtubeId?: string;     // Added for YouTube videos
   displayPreference?: 'video' | 'photo' | 'auto';  // Added for display preference
+  isMachineExercise?: boolean; // Added to identify machine exercises
+  machineType?: string; // Type of machine (treadmill, cable machine, etc)
+  muscleWikiId?: string; // ID for MuscleWiki API
 }

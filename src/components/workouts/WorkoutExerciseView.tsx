@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import ExerciseDemonstration from './ExerciseDemonstration';
 import ExerciseInstructions from './ExerciseInstructions';
 import TimerDisplay from './TimerDisplay';
-import { getBestExerciseImageUrlSync, getExerciseYoutubeId, searchExerciseImage } from '@/utils/exerciseImageUtils';
+import { getBestExerciseImageUrlSync } from '@/utils/exerciseImageUtils';
 import { useToast } from "@/hooks/use-toast";
 
 interface WorkoutExerciseViewProps {
@@ -47,7 +47,7 @@ const WorkoutExerciseView: React.FC<WorkoutExerciseViewProps> = ({
     exercise.gifUrl || getBestExerciseImageUrlSync(exercise);
   
   // Get YouTube video ID for the exercise if available
-  const youtubeId = !isRest ? getExerciseYoutubeId(exercise) : undefined;
+  const youtubeId = !isRest && exercise.youtubeId ? exercise.youtubeId : undefined;
   
   // Try to fetch a backup image if needed
   useEffect(() => {
@@ -64,6 +64,12 @@ const WorkoutExerciseView: React.FC<WorkoutExerciseViewProps> = ({
       getBackupImage();
     }
   }, [exercise.name, displayMode, backupImage, imageLoadFailed, isRest]);
+
+  // Placeholder for searchExerciseImage function
+  const searchExerciseImage = async (exerciseName: string): Promise<string | null> => {
+    // Implementation would be moved from exerciseImageUtils.ts
+    return null;
+  };
   
   // Toggle display mode between video and photo
   const toggleDisplayMode = () => {

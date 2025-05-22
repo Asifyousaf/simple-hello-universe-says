@@ -6,6 +6,7 @@ import WorkoutHeader from '../components/workouts/WorkoutHeader';
 import SearchAndFilter from '../components/workouts/SearchAndFilter';
 import WorkoutsList from '../components/workouts/WorkoutsList';
 import WorkoutCompleteHandler from '../components/workouts/WorkoutCompleteHandler';
+import MachineWorkouts from '../components/workouts/MachineWorkouts';
 import { WorkoutData } from '@/types/workout';
 import { useWorkouts } from '@/hooks/useWorkouts';
 import AuthRequiredHandler from '../components/workouts/AuthRequiredHandler';
@@ -53,7 +54,7 @@ const WorkoutsPage = () => {
   if (activeWorkout) {
     return (
       <Layout>
-        <div className="pt-24 pb-16 bg-white">
+        <div className="pt-12 pb-16 bg-white">
           <WorkoutCompleteHandler
             activeWorkout={activeWorkout}
             session={session}
@@ -67,18 +68,18 @@ const WorkoutsPage = () => {
 
   return (
     <Layout>
-      <div className="pt-24 pb-16 bg-gradient-to-br from-purple-500 to-purple-700 text-white">
-        <div className="container mx-auto px-4 py-16">
+      <div className="pt-12 pb-10 bg-gradient-to-br from-purple-500 to-purple-700 text-white">
+        <div className="container mx-auto px-4 py-8">
           <div className="flex items-center mb-4">
             <Dumbbell className="h-8 w-8 mr-3" />
             <h1 className="text-4xl md:text-5xl font-bold">Workouts</h1>
           </div>
-          <p className="text-lg md:text-xl max-w-2xl mb-8">
+          <p className="text-lg md:text-xl max-w-2xl mb-4">
             Find the perfect workout routine tailored to your fitness goals.
           </p>
           
           {allWorkouts.length > 0 && (
-            <div className="mt-8">
+            <div className="mt-6">
               <WorkoutHeader 
                 onStartFirstWorkout={(workout) => handleStartWorkout({
                   ...workout,
@@ -118,6 +119,10 @@ const WorkoutsPage = () => {
             userId={session?.user?.id}
             isLoading={loading}
           />
+          
+          <div className="mt-16">
+            <MachineWorkouts onStartWorkout={handleStartWorkout} />
+          </div>
 
           <div className="mt-8 text-center">
             <button className="border border-purple-600 text-purple-600 px-6 py-2 rounded-full hover:bg-purple-50 transition-colors">
