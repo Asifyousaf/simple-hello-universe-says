@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -307,7 +306,7 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
     fetchMachineExercises();
   }, []);
   
-  // Prepare workouts with image URLs
+  // Prepare workouts with images
   const workoutsWithImages = workouts.map(workout => {
     // Get first exercise for thumbnail if not already set
     if (!workout.image && workout.exercises && workout.exercises.length > 0) {
@@ -336,11 +335,13 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
           <Card key={workout.id} className="overflow-hidden h-full flex flex-col">
             <div className="h-48 overflow-hidden bg-gray-100">
               <img 
-                src={workout.image} 
+                src={workout.image || 'https://musclewiki.com/media/uploads/male-cardio-treadmill-run-side.gif'} 
                 alt={`${workout.title} thumbnail`} 
                 className="w-full h-full object-cover object-center"
                 onError={(e) => {
-                  e.currentTarget.src = 'https://musclewiki.com/media/uploads/male-cardio-treadmill-run-side.gif';
+                  // Fix the type error by strongly typing the event target
+                  const target = e.currentTarget as HTMLImageElement;
+                  target.src = 'https://musclewiki.com/media/uploads/male-cardio-treadmill-run-side.gif';
                 }}
               />
             </div>
@@ -358,7 +359,7 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
                 <h4 className="font-semibold mb-1">Equipment:</h4>
                 <ul className="text-sm text-gray-600">
                   {Array.from(new Set(workout.exercises.map((e: any) => 
-                    e.machineType || e.equipment || e.name.split(' ')[0]))).map((equipment, i) => (
+                    e.machineType || e.equipment || e.name.split(' ')[0]))).map((equipment: string, i: number) => (
                     <li key={i}>• {equipment}</li>
                   ))}
                 </ul>
