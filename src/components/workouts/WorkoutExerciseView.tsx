@@ -111,6 +111,40 @@ const WorkoutExerciseView: React.FC<WorkoutExerciseViewProps> = ({
       defaultInstructions.push('Lower your body until both knees are bent at 90 degrees');
       defaultInstructions.push('Push back up to starting position');
       defaultInstructions.push('Repeat with the other leg');
+    } 
+    // Add machine-specific instructions
+    else if (exercise.isMachineExercise || (exercise.equipment && exercise.equipment.toLowerCase().includes('machine'))) {
+      if (name.includes('treadmill') || name.includes('run') || name.includes('jog')) {
+        defaultInstructions.push('Start at a comfortable warm-up pace');
+        defaultInstructions.push('Gradually increase speed to your target intensity');
+        defaultInstructions.push('Maintain proper posture with shoulders back and core engaged');
+        defaultInstructions.push('Complete your workout duration, then gradually reduce speed for cooldown');
+      } else if (name.includes('bike') || name.includes('cycle')) {
+        defaultInstructions.push('Adjust the seat height so your legs are slightly bent at the bottom of the pedal stroke');
+        defaultInstructions.push('Start pedaling at a moderate resistance');
+        defaultInstructions.push('Keep your core engaged and maintain good posture');
+        defaultInstructions.push('Increase resistance for intervals as needed');
+      } else if (name.includes('elliptical')) {
+        defaultInstructions.push('Step onto the machine and grab the handles');
+        defaultInstructions.push('Start moving your feet and arms in a coordinated motion');
+        defaultInstructions.push('Maintain an upright posture with core engaged');
+        defaultInstructions.push('Adjust resistance to achieve desired intensity');
+      } else if (name.includes('row') || name.includes('rowing')) {
+        defaultInstructions.push('Sit on the seat with feet secured on the footplates');
+        defaultInstructions.push('Grab the handle with an overhand grip, arms extended');
+        defaultInstructions.push('Push with legs first, then pull with back, finally arms');
+        defaultInstructions.push('Return to starting position: arms first, then torso, finally legs');
+      } else if (name.includes('cable')) {
+        defaultInstructions.push('Adjust the cable to the appropriate height');
+        defaultInstructions.push('Select the proper attachment for the exercise');
+        defaultInstructions.push('Maintain proper form throughout the movement');
+        defaultInstructions.push('Control the weight in both directions');
+      } else {
+        defaultInstructions.push('Adjust the machine to fit your body proportions');
+        defaultInstructions.push('Start with a lighter weight to master proper form');
+        defaultInstructions.push('Perform the exercise with controlled movement');
+        defaultInstructions.push('Complete all repetitions with proper breathing technique');
+      }
     } else {
       defaultInstructions.push('Perform the exercise with controlled movement');
       defaultInstructions.push('Maintain proper form throughout');
@@ -180,7 +214,9 @@ const WorkoutExerciseView: React.FC<WorkoutExerciseViewProps> = ({
               <p className="text-gray-600 mb-4">
                 {isRest ? 
                   'Take a short break before the next set' : 
-                  `${exercise.reps || 10} reps × ${totalSets} sets`
+                  (exercise.isMachineExercise ? 
+                    `Duration: ${exercise.duration || 60} seconds` : 
+                    `${exercise.reps || 10} reps × ${totalSets} sets`)
                 }
               </p>
               
