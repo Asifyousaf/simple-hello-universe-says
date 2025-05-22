@@ -6,7 +6,7 @@ import WorkoutHeader from '../components/workouts/WorkoutHeader';
 import SearchAndFilter from '../components/workouts/SearchAndFilter';
 import WorkoutsList from '../components/workouts/WorkoutsList';
 import WorkoutCompleteHandler from '../components/workouts/WorkoutCompleteHandler';
-import MachineWorkouts from '../components/workouts/MachineWorkouts';
+import MachineWorkoutsProvider from '../components/workouts/MachineWorkoutsProvider';
 import { WorkoutData } from '@/types/workout';
 import { useWorkouts } from '@/hooks/useWorkouts';
 import AuthRequiredHandler from '../components/workouts/AuthRequiredHandler';
@@ -15,6 +15,7 @@ import { Dumbbell } from 'lucide-react';
 const WorkoutsPage = () => {
   const [session, setSession] = useState<any>(null);
   const [activeWorkout, setActiveWorkout] = useState<WorkoutData | null>(null);
+  const [machineWorkouts, setMachineWorkouts] = useState<WorkoutData[]>([]);
   
   const {
     loading,
@@ -66,6 +67,11 @@ const WorkoutsPage = () => {
     );
   }
 
+  // Combine all workouts for display
+  const combinedWorkouts = [...filteredWorkouts, ...machineWorkouts.filter(mw => 
+    !filteredWorkouts.some(fw => fw.id === mw.id)
+  )];
+
   return (
     <Layout>
       <div className="pt-6 pb-6 bg-gradient-to-br from-purple-500 to-purple-700 text-white">
@@ -75,7 +81,7 @@ const WorkoutsPage = () => {
             <h1 className="text-3xl md:text-4xl font-bold">Workouts</h1>
           </div>
           <p className="text-base md:text-lg max-w-2xl mb-3">
-            Find the perfect workout routine tailored to your fitness goals.
+            Find the perfect workout routine tailored to your fitness goals, including machine-based exercises.
           </p>
           
           {allWorkouts.length > 0 && (
@@ -110,18 +116,17 @@ const WorkoutsPage = () => {
 
       <div className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="mt-6 mb-12">
-            <MachineWorkouts onStartWorkout={handleStartWorkout} />
-          </div>
+          {/* MachineWorkoutsProvider to fetch and provide machine workouts */}
+          <MachineWorkoutsProvider onWorkoutsLoaded={setMachineWorkouts} />
           
-          <h2 className="text-2xl font-bold mt-16 mb-8">Recommended Workouts</h2>
+          <h2 className="text-2xl font-bold mb-8">All Workouts</h2>
           
           <WorkoutsList 
-            workouts={filteredWorkouts}
+            workouts={combinedWorkouts}
             onStartWorkout={handleStartWorkout}
             onDeleteWorkout={handleDeleteWorkout}
             userId={session?.user?.id}
-            isLoading={loading}
+            isLoading={loading && machineWorkouts.length === 0}
           />
 
           <div className="mt-8 text-center">

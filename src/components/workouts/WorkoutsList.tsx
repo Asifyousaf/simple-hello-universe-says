@@ -50,7 +50,7 @@ const WorkoutsList: React.FC<WorkoutsListProps> = ({
       workout.exercises = workout.exercises.map((exercise: any) => ({
         ...exercise,
         gifUrl: getBestExerciseImageUrlSync(exercise),
-        youtubeId: getExerciseYoutubeId(exercise),
+        youtubeId: exercise.youtubeId || getExerciseYoutubeId(exercise),
         displayPreference: exercise.displayPreference || 'auto',
         isMachineExercise: exercise.isMachineExercise || 
           (exercise.equipment && exercise.equipment.toLowerCase().includes('machine')),
@@ -68,7 +68,7 @@ const WorkoutsList: React.FC<WorkoutsListProps> = ({
             exercises: packItem.exercises.map((exercise: any) => ({
               ...exercise,
               gifUrl: getBestExerciseImageUrlSync(exercise),
-              youtubeId: getExerciseYoutubeId(exercise),
+              youtubeId: exercise.youtubeId || getExerciseYoutubeId(exercise),
               displayPreference: exercise.displayPreference || 'auto',
               isMachineExercise: exercise.isMachineExercise || 
                 (exercise.equipment && exercise.equipment.toLowerCase().includes('machine')),
@@ -84,9 +84,19 @@ const WorkoutsList: React.FC<WorkoutsListProps> = ({
     return workout;
   };
 
+  // Make sure we don't have duplicate workouts
+  const uniqueWorkouts = workouts.reduce((acc: WorkoutData[], current) => {
+    const x = acc.find(item => item.id === current.id);
+    if (!x) {
+      return acc.concat([current]);
+    } else {
+      return acc;
+    }
+  }, []);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {workouts.map((workout) => (
+      {uniqueWorkouts.map((workout) => (
         <WorkoutCard
           key={workout.id}
           workout={workout}
