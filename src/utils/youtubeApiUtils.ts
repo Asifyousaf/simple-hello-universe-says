@@ -11,8 +11,9 @@ export const searchYouTubeVideos = async (query: string, maxResults: number = 5)
   try {
     console.log(`Searching YouTube for: "${query}" (max results: ${maxResults})`);
     
+    // Updated to include videoEmbeddable=true parameter
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=${maxResults}&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=${maxResults}&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`
     );
     
     if (!response.ok) {
@@ -22,7 +23,12 @@ export const searchYouTubeVideos = async (query: string, maxResults: number = 5)
     const data = await response.json();
     console.log(`Found ${data.items?.length || 0} videos for query "${query}"`);
     
-    return data.items.map((item: any) => ({
+    // Filter videos to ensure they're embeddable and not live broadcasts
+    const filteredItems = data.items.filter((item: any) => 
+      item.snippet.liveBroadcastContent === 'none'
+    );
+    
+    return filteredItems.map((item: any) => ({
       id: item.id.videoId,
       title: item.snippet.title,
       thumbnail: item.snippet.thumbnails.medium.url,
@@ -57,7 +63,8 @@ export const getExerciseYouTubeVideo = async (exerciseInfo: {
     query += ' exercise proper form';
     
     console.log(`Searching for exercise video with query: "${query}"`);
-    const videos = await searchYouTubeVideos(query, 1);
+    // Increased to try to find at least one good video
+    const videos = await searchYouTubeVideos(query, 3);
     
     if (videos.length > 0) {
       console.log(`Found video ID ${videos[0].id} for exercise ${exerciseInfo.name}`);
@@ -118,11 +125,43 @@ export const searchWorkoutVideos = async (query: string): Promise<any[]> => {
     const searchQuery = `${query} workout fitness exercise`;
     console.log(`Searching for workout videos with query: "${searchQuery}"`);
     
+    // Use the updated search function that ensures videos are embeddable
     const videos = await searchYouTubeVideos(searchQuery, 8);
     return videos;
   } catch (error) {
     console.error('Error searching workout videos:', error);
     return [];
+  }
+};
+
+/**
+ * Verifies if a YouTube video ID is valid and embeddable
+ * @param videoId The YouTube video ID to verify
+ * @returns Promise with boolean indicating if video is valid
+ */
+export const verifyYouTubeVideo = async (videoId: string): Promise<boolean> => {
+  if (!videoId) return false;
+  
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/videos?part=status&id=${videoId}&key=${YOUTUBE_API_KEY}`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`YouTube API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Check if video exists and is embeddable
+    if (data.items && data.items.length > 0) {
+      return data.items[0].status.embeddable === true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('Error verifying YouTube video:', error);
+    return false;
   }
 };
 
@@ -156,3 +195,49 @@ export const getPopularWorkoutVideos = async (): Promise<{[key: string]: any[]}>
   return results;
 };
 
+// A set of proven working YouTube video IDs for exercises as fallbacks
+export const fallbackExerciseVideos = {
+  'push up': 'IODxDxX7oi4',
+  'squat': 'gsNoPYwWXeE',
+  'plank': 'pSHjTRCQxIw',
+  'deadlift': 'ytGaGIn3SjE',
+  'bench press': 'rT7DgCr-3pg',
+  'pull up': 'eGo4IYlbE5g',
+  'lunge': 'QOVaHwm-Q6U',
+  'bicep curl': 'ykJmrZ5v0Oo',
+  'tricep extension': 'nRiJVZDpdL0',
+  'shoulder press': 'qEwKCR5JCog',
+  'leg press': 'IZxQVV3E7nE',
+  'lat pulldown': 'CAwf7n6Luuc',
+  'crunches': 'Xyd_fa5zoEU',
+  'mountain climber': 'hZb6jTbCLeE',
+  'jumping jacks': '2W4ZNSwoW_4',
+  'russian twist': '-BzNffL_6YE',
+  'burpee': 'TU8QYVW0gDU',
+  'push ups': 'ba8tr1NzwXU',
+  'air squats': 'CsPAsICeRsM',
+  'general workout': 'UBMk30rjy0o',
+  'full body': 'oAPCPjnU1wA',
+  'beginner workout': 'gC_L9qAHVJ8',
+  'home workout': 'sKHz-V1n6KA'
+};
+
+/**
+ * Gets a verified YouTube video ID, with fallbacks
+ * @param exerciseName The name of the exercise
+ * @returns A verified YouTube video ID or null
+ */
+export const getVerifiedYouTubeId = async (exerciseName: string): Promise<string | null> => {
+  const normalizedName = exerciseName.toLowerCase();
+  
+  // First check our fallback list
+  for (const [key, videoId] of Object.entries(fallbackExerciseVideos)) {
+    if (normalizedName.includes(key)) {
+      const isValid = await verifyYouTubeVideo(videoId);
+      if (isValid) return videoId;
+    }
+  }
+  
+  // If no match or invalid, use a general workout video as ultimate fallback
+  return fallbackExerciseVideos['general workout'];
+};

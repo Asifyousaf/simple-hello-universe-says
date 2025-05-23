@@ -7,7 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Sample fitness YouTube videos for post enrichment
+// Sample fitness YouTube videos for post enrichment - known to be working and embeddable
 const fitnessYouTubeVideos = [
   { id: "IODxDxX7oi4", title: "Perfect Push Up Form" },
   { id: "gsNoPYwWXeE", title: "Proper Squat Technique" },
@@ -23,7 +23,11 @@ const fitnessYouTubeVideos = [
   { id: "hZb6jTbCLeE", title: "How to Do Mountain Climbers" },
   { id: "-BzNffL_6YE", title: "STOP Doing Russian Twists Like This!" },
   { id: "TU8QYVW0gDU", title: "How To Do A Perfect Burpee" },
-  { id: "2W4ZNSwoW_4", title: "How To Do Jumping Jacks Properly" }
+  { id: "2W4ZNSwoW_4", title: "How To Do Jumping Jacks Properly" },
+  { id: "UBMk30rjy0o", title: "20 Minute Full Body Workout - No Equipment Needed" },
+  { id: "oAPCPjnU1wA", title: "30 Minute Full Body Workout" },
+  { id: "gC_L9qAHVJ8", title: "20 Min Full Body Workout for Beginners" },
+  { id: "sKHz-V1n6KA", title: "30 Min Full Body Home Workout" }
 ];
 
 serve(async (req) => {
@@ -102,9 +106,35 @@ serve(async (req) => {
            postData.content?.toLowerCase().includes('exercise') ||
            postData.content?.toLowerCase().includes('fitness'))) {
         
-        const randomVideo = fitnessYouTubeVideos[Math.floor(Math.random() * fitnessYouTubeVideos.length)];
-        postData.video_id = randomVideo.id;
-        postData.video_title = randomVideo.title;
+        // Select a video that's relevant to the content if possible
+        let selectedVideo = null;
+        const content = postData.content.toLowerCase();
+        
+        if (content.includes('push') || content.includes('chest')) {
+          selectedVideo = fitnessYouTubeVideos.find(v => v.title.toLowerCase().includes('push'));
+        } else if (content.includes('squat') || content.includes('legs')) {
+          selectedVideo = fitnessYouTubeVideos.find(v => v.title.toLowerCase().includes('squat'));
+        } else if (content.includes('deadlift') || content.includes('back')) {
+          selectedVideo = fitnessYouTubeVideos.find(v => v.title.toLowerCase().includes('deadlift'));
+        } else if (content.includes('bench') || content.includes('chest')) {
+          selectedVideo = fitnessYouTubeVideos.find(v => v.title.toLowerCase().includes('bench'));
+        } else if (content.includes('pull up') || content.includes('back')) {
+          selectedVideo = fitnessYouTubeVideos.find(v => v.title.toLowerCase().includes('pull up'));
+        } else if (content.includes('beginner')) {
+          selectedVideo = fitnessYouTubeVideos.find(v => v.title.toLowerCase().includes('beginner'));
+        } else if (content.includes('full body')) {
+          selectedVideo = fitnessYouTubeVideos.find(v => v.title.toLowerCase().includes('full body'));
+        } else if (content.includes('home')) {
+          selectedVideo = fitnessYouTubeVideos.find(v => v.title.toLowerCase().includes('home'));
+        }
+        
+        // If no specific match, use a random video
+        if (!selectedVideo) {
+          selectedVideo = fitnessYouTubeVideos[Math.floor(Math.random() * fitnessYouTubeVideos.length)];
+        }
+        
+        postData.video_id = selectedVideo.id;
+        postData.video_title = selectedVideo.title;
       }
       
       // Insert the post
@@ -149,4 +179,3 @@ serve(async (req) => {
     });
   }
 });
-

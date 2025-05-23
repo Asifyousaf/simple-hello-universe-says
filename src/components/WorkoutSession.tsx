@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { XCircle, Check, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { WorkoutData } from '@/types/workout';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
 import { getBestExerciseImageUrlSync, getExerciseYoutubeIdSync } from '@/utils/exerciseImageUtils';
 import { Exercise } from '@/types/exercise';
+import { fallbackExerciseVideos } from '@/utils/youtubeApiUtils';
 
 interface WorkoutSessionProps {
   workout: WorkoutData;
@@ -73,22 +75,11 @@ const WorkoutSession = ({ workout, onComplete, onCancel }: WorkoutSessionProps) 
     // Return the next 2-3 exercises
     return exercises.slice(currentExerciseIndex + 1, currentExerciseIndex + 4).map(ex => {
       // Convert workout Exercise to Exercise type
-      return {
-        ...ex,
-        id: ex.id || `exercise-${Math.random().toString(36).substring(2, 9)}`,
-        secondaryMuscles: ex.secondaryMuscles || [],
-        // Try to get a YouTube ID for the exercise
-        youtubeId: ex.youtubeId || getExerciseYoutubeIdSync({
-          name: ex.name,
-          equipment: ex.equipment,
-          bodyPart: ex.bodyPart,
-          target: ex.target
-        })
-      } as Exercise;
+      return adaptExerciseToFullType(ex);
     });
   };
 
-  // Ensure current exercise has a valid image URL and is properly typed
+  // Ensure current exercise has a valid image URL and YouTube ID and is properly typed
   const adaptExerciseToFullType = (exercise: any): Exercise => {
     if (!exercise) return {
       id: 'placeholder',
@@ -103,13 +94,28 @@ const WorkoutSession = ({ workout, onComplete, onCancel }: WorkoutSessionProps) 
       reps: 10
     };
     
-    // Try to get a YouTube ID for the exercise
-    const youtubeId = exercise.youtubeId || getExerciseYoutubeIdSync({
-      name: exercise.name,
-      equipment: exercise.equipment,
-      bodyPart: exercise.bodyPart,
-      target: exercise.target
-    });
+    const exerciseName = exercise.name.toLowerCase();
+    
+    // Look for a match in our fallback exercise videos for better reliability
+    let youtubeId = exercise.youtubeId;
+    if (!youtubeId) {
+      for (const [key, videoId] of Object.entries(fallbackExerciseVideos)) {
+        if (exerciseName.includes(key)) {
+          youtubeId = videoId;
+          break;
+        }
+      }
+      
+      // If still no match, try to get an ID for the exercise type
+      if (!youtubeId) {
+        youtubeId = getExerciseYoutubeIdSync({
+          name: exercise.name,
+          equipment: exercise.equipment,
+          bodyPart: exercise.bodyPart,
+          target: exercise.target
+        });
+      }
+    }
     
     return {
       ...exercise,

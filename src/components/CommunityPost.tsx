@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,7 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ id: string; name: string } | null>(null);
+  const [videoError, setVideoError] = useState(false);
   
   useEffect(() => {
     // Check if user is logged in
@@ -274,6 +276,11 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
       description: "The post has been shared to your profile",
     });
   };
+
+  const handleVideoError = () => {
+    setVideoError(true);
+    console.error('Error loading YouTube video:', post.videoId);
+  };
   
   return (
     <Card className="mb-4 overflow-hidden">
@@ -300,21 +307,27 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
             <img src={post.image} alt="Post content" className="w-full object-cover" />
           </div>
         )}
-        {post.videoId && (
+        {post.videoId && !videoError && (
           <div className="rounded-md overflow-hidden mb-2">
             <div className="relative w-full pb-[56.25%]">
               <iframe 
                 className="absolute top-0 left-0 w-full h-full rounded-lg"
-                src={`https://www.youtube.com/embed/${post.videoId}?modestbranding=1&rel=0`}
+                src={`https://www.youtube.com/embed/${post.videoId}?controls=1&modestbranding=1&rel=0`}
                 title={post.videoTitle || "Fitness video"}
                 frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
+                onError={handleVideoError}
               ></iframe>
             </div>
             {post.videoTitle && (
               <p className="text-sm text-gray-500 mt-2">{post.videoTitle}</p>
             )}
+          </div>
+        )}
+        {videoError && (
+          <div className="bg-gray-100 p-4 rounded-md mb-2 text-center">
+            <p className="text-sm text-gray-500">The video is currently unavailable</p>
           </div>
         )}
       </CardContent>

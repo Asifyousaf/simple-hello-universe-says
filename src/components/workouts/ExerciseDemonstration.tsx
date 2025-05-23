@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Exercise } from '@/types/exercise';
+import { verifyYouTubeVideo, getVerifiedYouTubeId } from '@/utils/youtubeApiUtils';
 
 interface ExerciseDemonstrationProps {
   exercise: Exercise;
@@ -25,10 +26,48 @@ const ExerciseDemonstration: React.FC<ExerciseDemonstrationProps> = ({
   const [imgError, setImgError] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [videoLoading, setVideoLoading] = useState(true);
+  const [videoError, setVideoError] = useState(false);
+  const [youtubeId, setYoutubeId] = useState<string | null>(exercise?.youtubeId || null);
   
   const exerciseName = exercise?.name || 'Exercise';
   const imageUrl = exercise?.gifUrl || '';
-  const youtubeId = exercise?.youtubeId;
+  
+  // Verify YouTube ID on mount and when it changes
+  useEffect(() => {
+    if (exercise?.youtubeId) {
+      setYoutubeId(exercise.youtubeId);
+      setVideoLoading(true);
+      setVideoError(false);
+      
+      // Verify the YouTube ID is valid
+      verifyYouTubeVideo(exercise.youtubeId).then(isValid => {
+        if (!isValid) {
+          console.log(`YouTube video ID ${exercise.youtubeId} for ${exerciseName} is invalid. Finding alternative...`);
+          setVideoError(true);
+          
+          // Try to get a verified YouTube ID
+          getVerifiedYouTubeId(exerciseName).then(newId => {
+            if (newId) {
+              console.log(`Found alternative YouTube ID ${newId} for ${exerciseName}`);
+              setYoutubeId(newId);
+              setVideoError(false);
+            } else {
+              setYoutubeId(null);
+              setVideoError(true);
+            }
+          });
+        }
+      });
+    } else {
+      // If no YouTube ID provided, try to find one
+      getVerifiedYouTubeId(exerciseName).then(newId => {
+        if (newId) {
+          console.log(`Found YouTube ID ${newId} for ${exerciseName}`);
+          setYoutubeId(newId);
+        }
+      });
+    }
+  }, [exercise?.youtubeId, exerciseName]);
   
   useEffect(() => {
     // Reset states when imageUrl changes
@@ -71,8 +110,23 @@ const ExerciseDemonstration: React.FC<ExerciseDemonstrationProps> = ({
     setVideoLoading(false);
   };
   
+  const handleVideoError = () => {
+    console.log('Video error occurred for:', exerciseName);
+    setVideoError(true);
+    
+    // Try to get a verified YouTube ID as fallback
+    getVerifiedYouTubeId(exerciseName).then(newId => {
+      if (newId && newId !== youtubeId) {
+        console.log(`Found fallback YouTube ID ${newId} for ${exerciseName}`);
+        setYoutubeId(newId);
+      } else {
+        setYoutubeId(null);
+      }
+    });
+  };
+  
   const renderContent = () => {
-    if (youtubeId) {
+    if (youtubeId && !videoError) {
       return (
         <div className="relative w-full pb-[56.25%]">
           {videoLoading && (
@@ -83,12 +137,13 @@ const ExerciseDemonstration: React.FC<ExerciseDemonstrationProps> = ({
           )}
           <iframe 
             className="absolute top-0 left-0 w-full h-full rounded-lg"
-            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=0&mute=0&controls=1&modestbranding=1&rel=0`}
+            src={`https://www.youtube.com/embed/${youtubeId}?controls=1&modestbranding=1&rel=0`}
             title={`${exerciseName} demonstration`}
             frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             onLoad={handleVideoLoad}
+            onError={handleVideoError}
           ></iframe>
         </div>
       );
