@@ -81,7 +81,9 @@ export const useMachineWorkouts = () => {
                 reps: 12,
                 duration: ex.duration || 60,
                 restTime: ex.restTime || 60,
-                youtubeId: youtubeId || ''
+                youtubeId: youtubeId || '',
+                id: ex.id || `exercise-${Math.random().toString(36).substring(2, 9)}`,
+                secondaryMuscles: ex.secondaryMuscles || []
               };
             });
           
