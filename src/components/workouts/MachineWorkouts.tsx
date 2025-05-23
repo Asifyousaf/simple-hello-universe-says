@@ -76,7 +76,7 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
             .slice(0, template.maxExercises)
             .map((ex: Exercise) => {
               // Ensure each exercise has a YouTube ID
-              const youtubeId = ex.youtubeId || getExerciseYoutubeId({
+              const youtubeId = getExerciseYoutubeId({
                 name: ex.name,
                 equipment: ex.equipment,
                 bodyPart: ex.bodyPart,
@@ -89,7 +89,7 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
                 reps: 12,
                 duration: ex.duration || 60,
                 restTime: ex.restTime || 60,
-                youtubeId: youtubeId
+                youtubeId: youtubeId || ''
               };
             });
           
@@ -104,7 +104,7 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
             image: getBestExerciseImageUrlSync(workoutExercises[0]),
             type: 'machine' // Ensure type property is added
           };
-        }).filter(Boolean) as unknown as WorkoutData[]; // Filter out nulls and cast to WorkoutData[]
+        }).filter(Boolean) as WorkoutData[]; // Filter out nulls and cast to WorkoutData[]
         
         // Combine with predefined workouts - ensure all have proper type
         if (apiWorkouts && apiWorkouts.length > 0) {
@@ -142,7 +142,7 @@ const MachineWorkouts: React.FC<MachineWorkoutsProps> = ({ onStartWorkout }) => 
           
           return {
             ...exercise,
-            youtubeId: youtubeId || undefined
+            youtubeId: youtubeId || ''
           };
         }
         return exercise;

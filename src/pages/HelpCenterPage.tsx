@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, Mail, MapPin, Phone } from 'lucide-react';
 
 const HelpCenterPage = () => {
   const [activeCategory, setActiveCategory] = useState("getting-started");
@@ -160,16 +160,24 @@ const HelpCenterPage = () => {
                   </Button>
                 </div>
                 
-                <div className="bg-purple-50 rounded-xl shadow-lg p-6 text-center">
-                  <h2 className="text-xl font-semibold mb-4 text-gray-800">Need More Help?</h2>
-                  <p className="text-gray-600 mb-6">
-                    Couldn't find what you're looking for? Our support team is here to help.
-                  </p>
-                  <Button className="bg-purple-600 hover:bg-purple-700 text-white mb-3 w-full">
-                    Contact Support
-                  </Button>
-                  <Button variant="outline" className="border-purple-600 text-purple-600 w-full">
-                    Live Chat
+                <div className="bg-purple-50 rounded-xl shadow-lg p-6">
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">Contact Us</h2>
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <Mail className="h-5 w-5 text-purple-600 mr-3" />
+                      <p className="text-gray-700">asifyousaf1@gmail.com</p>
+                    </div>
+                    <div className="flex items-center">
+                      <MapPin className="h-5 w-5 text-purple-600 mr-3" />
+                      <p className="text-gray-700">Dubai</p>
+                    </div>
+                    <div className="flex items-center">
+                      <Phone className="h-5 w-5 text-purple-600 mr-3" />
+                      <p className="text-gray-700">Coming Soon</p>
+                    </div>
+                  </div>
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white mt-6 w-full">
+                    Send Message
                   </Button>
                 </div>
               </div>

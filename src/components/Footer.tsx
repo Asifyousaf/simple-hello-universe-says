@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { FaInstagram, FaYoutube, FaTiktok } from 'react-icons/fa';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -72,17 +72,14 @@ const Footer = () => {
               Your personalized wellness companion, helping you achieve your fitness and nutrition goals with AI-powered guidance.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-500 hover:text-purple-600">
-                <FaFacebook size={20} />
-              </a>
-              <a href="#" className="text-gray-500 hover:text-purple-600">
-                <FaTwitter size={20} />
-              </a>
-              <a href="#" className="text-gray-500 hover:text-purple-600">
+              <a href="https://www.instagram.com/nutriciousbuddy/?igsh=MWplc2JmZXdrZ3Ft#" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-purple-600">
                 <FaInstagram size={20} />
               </a>
-              <a href="#" className="text-gray-500 hover:text-purple-600">
-                <FaLinkedin size={20} />
+              <a href="https://www.youtube.com/@nutribuddy11?si=ZCvADGcR5QunrCIy" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-purple-600">
+                <FaYoutube size={20} />
+              </a>
+              <a href="https://www.tiktok.com/@nutri.buddy?_t=ZS-8wSwfwFqg0O&_r=1" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-purple-600">
+                <FaTiktok size={20} />
               </a>
             </div>
           </div>
@@ -114,9 +111,6 @@ const Footer = () => {
               <li className="mb-2">
                 <Link to="/careers" className="text-sm text-gray-600 hover:text-purple-600">Careers</Link>
               </li>
-              <li className="mb-2">
-                <Link to="/press" className="text-sm text-gray-600 hover:text-purple-600">Press</Link>
-              </li>
               <li>
                 <Link to="/blog" className="text-sm text-gray-600 hover:text-purple-600">Blog</Link>
               </li>
@@ -132,17 +126,8 @@ const Footer = () => {
               <li className="mb-2">
                 <Link to="/privacy-policy" className="text-sm text-gray-600 hover:text-purple-600">Privacy Policy</Link>
               </li>
-              <li className="mb-2">
-                <Link to="/terms-of-service" className="text-sm text-gray-600 hover:text-purple-600">Terms of Service</Link>
-              </li>
-              <li className="mb-2">
-                <Link to="/cookie-policy" className="text-sm text-gray-600 hover:text-purple-600">Cookie Policy</Link>
-              </li>
-              <li className="mb-2">
-                <Link to="/safety-center" className="text-sm text-gray-600 hover:text-purple-600">Safety Center</Link>
-              </li>
               <li>
-                <Link to="/community-guidelines" className="text-sm text-gray-600 hover:text-purple-600">Community Guidelines</Link>
+                <Link to="/safety-center" className="text-sm text-gray-600 hover:text-purple-600">Safety Center</Link>
               </li>
             </ul>
           </div>
