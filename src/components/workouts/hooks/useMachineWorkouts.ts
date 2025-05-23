@@ -123,7 +123,7 @@ export const useMachineWorkouts = () => {
     // Ensure all exercises have YouTube IDs
     if (workout.exercises && Array.isArray(workout.exercises)) {
       const updatedExercises = workout.exercises.map(exercise => {
-        if (!exercise.youtubeId) {
+        if (exercise && !exercise.youtubeId && typeof exercise === 'object') {
           // Try to get a YouTube ID for this exercise
           const youtubeId = getExerciseYoutubeId({
             name: exercise.name,
@@ -134,7 +134,9 @@ export const useMachineWorkouts = () => {
           
           return {
             ...exercise,
-            youtubeId: youtubeId || ''
+            youtubeId: youtubeId || '',
+            id: exercise.id || `exercise-${Math.random().toString(36).substring(2, 9)}`,
+            secondaryMuscles: exercise.secondaryMuscles || []
           };
         }
         return exercise;

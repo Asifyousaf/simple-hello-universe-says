@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Pause } from 'lucide-react';
 
 interface TimerDisplayProps {
-  timeLeft: number;
+  remainingSeconds: number;
   isPaused: boolean;
   isRest: boolean;
   animate?: boolean;
@@ -11,32 +11,32 @@ interface TimerDisplayProps {
 }
 
 const TimerDisplay: React.FC<TimerDisplayProps> = ({ 
-  timeLeft, 
+  remainingSeconds, 
   isPaused, 
   isRest,
   animate = false,
   onTimeEnd 
 }) => {
   // Convert seconds to minutes and seconds
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
+  const minutes = Math.floor(remainingSeconds / 60);
+  const seconds = remainingSeconds % 60;
   
   // Format display with leading zeros
   const formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   
   // Trigger onTimeEnd when time reaches zero
   useEffect(() => {
-    if (timeLeft === 0 && onTimeEnd) {
+    if (remainingSeconds === 0 && onTimeEnd) {
       setTimeout(() => {
         onTimeEnd();
       }, 300);
     }
-  }, [timeLeft, onTimeEnd]);
+  }, [remainingSeconds, onTimeEnd]);
   
   // Animation classes based on time remaining
   const getAnimationClasses = () => {
-    if (timeLeft <= 3) return 'animate-pulse scale-110 text-red-600';
-    if (timeLeft <= 10) return 'animate-pulse text-orange-600';
+    if (remainingSeconds <= 3) return 'animate-pulse scale-110 text-red-600';
+    if (remainingSeconds <= 10) return 'animate-pulse text-orange-600';
     if (animate) return 'scale-110 transition-transform';
     return '';
   };
@@ -83,7 +83,7 @@ const TimerDisplay: React.FC<TimerDisplayProps> = ({
           stroke={isRest ? "#3b82f6" : "#8b5cf6"} 
           strokeWidth="4" 
           strokeDasharray="289.02652413026095" 
-          strokeDashoffset={289.02652413026095 * (1 - timeLeft / (isRest ? 60 : 60))}
+          strokeDashoffset={289.02652413026095 * (1 - remainingSeconds / (isRest ? 60 : 60))}
           className="transition-all duration-1000 ease-linear"
         />
       </svg>

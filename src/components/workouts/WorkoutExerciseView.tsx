@@ -38,6 +38,8 @@ const WorkoutExerciseView: React.FC<WorkoutExerciseViewProps> = ({
           <ExerciseDemonstration 
             exercise={exercise}
             isRest={isRest}
+            currentSet={currentSet}
+            totalSets={totalSets}
           />
         </div>
         

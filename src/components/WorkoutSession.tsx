@@ -11,6 +11,7 @@ import WorkoutProgress, { WorkoutHeader } from './workouts/WorkoutProgress';
 import { WorkoutData } from '@/types/workout';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
 import { getBestExerciseImageUrlSync } from '@/utils/exerciseImageUtils';
+import { Exercise } from '@/types/exercise';
 
 interface WorkoutSessionProps {
   workout: WorkoutData;
@@ -71,15 +72,38 @@ const WorkoutSession = ({ workout, onComplete, onCancel }: WorkoutSessionProps) 
     }
     
     // Return the next 2-3 exercises
-    return exercises.slice(currentExerciseIndex + 1, currentExerciseIndex + 4);
+    return exercises.slice(currentExerciseIndex + 1, currentExerciseIndex + 4).map(ex => {
+      // Convert workout Exercise to Exercise type
+      return {
+        ...ex,
+        id: ex.id || `exercise-${Math.random().toString(36).substring(2, 9)}`,
+        secondaryMuscles: ex.secondaryMuscles || [],
+      } as Exercise;
+    });
   };
 
-  // Ensure current exercise has a valid image URL
-  const getExerciseImageUrl = (exercise) => {
-    if (!exercise) return null;
+  // Ensure current exercise has a valid image URL and is properly typed
+  const adaptExerciseToFullType = (exercise: any): Exercise => {
+    if (!exercise) return {
+      id: 'placeholder',
+      name: 'Default Exercise',
+      bodyPart: '',
+      equipment: '',
+      gifUrl: '',
+      target: '',
+      secondaryMuscles: [],
+      instructions: [],
+      sets: 3,
+      reps: 10
+    };
     
-    // Use the utility to get the best image URL
-    return getBestExerciseImageUrlSync(exercise);
+    return {
+      ...exercise,
+      id: exercise.id || `exercise-${Math.random().toString(36).substring(2, 9)}`,
+      secondaryMuscles: exercise.secondaryMuscles || [],
+      gifUrl: getBestExerciseImageUrlSync(exercise),
+      instructions: exercise.instructions || []
+    };
   };
 
   return (
@@ -122,17 +146,14 @@ const WorkoutSession = ({ workout, onComplete, onCancel }: WorkoutSessionProps) 
         {currentExerciseIndex < exercises.length && currentExercise ? (
           <div className="space-y-8">
             <WorkoutExerciseView
-              exercise={{
-                ...currentExercise,
-                gifUrl: getExerciseImageUrl(currentExercise)
-              }}
+              exercise={adaptExerciseToFullType(currentExercise)}
               currentSet={currentSet}
               totalSets={currentExercise.sets || 3}
               remainingSeconds={timeLeft}
               isRest={isResting}
               isPaused={isPaused}
               onTogglePause={handlePlayPause}
-              nextExercises={getNextExercises()} // Pass next exercises
+              nextExercises={getNextExercises()} 
               onComplete={isResting ? 
                 () => {
                   setIsResting(false);

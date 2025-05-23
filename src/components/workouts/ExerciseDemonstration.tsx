@@ -1,33 +1,33 @@
 
 import React, { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
+import { Exercise } from '@/types/exercise';
 
 interface ExerciseDemonstrationProps {
-  exerciseName: string;
-  imageUrl: string;
-  currentSet: number;
-  totalSets: number;
+  exercise: Exercise;
+  isRest: boolean;
+  currentSet?: number;
+  totalSets?: number;
   isLoading?: boolean;
   onImageError?: () => void;
   compact?: boolean;
-  youtubeId?: string;
 }
 
 const ExerciseDemonstration: React.FC<ExerciseDemonstrationProps> = ({ 
-  exerciseName, 
-  imageUrl, 
-  currentSet,
-  totalSets,
+  exercise, 
+  isRest,
+  currentSet = 1,
+  totalSets = 3,
   isLoading = false,
   onImageError,
-  compact = false,
-  youtubeId
+  compact = false
 }) => {
   const [imgError, setImgError] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   
-  // Check if this is a rest period based on the exercise name
-  const isRestPeriod = exerciseName === 'Rest Time';
+  const exerciseName = exercise?.name || 'Exercise';
+  const imageUrl = exercise?.gifUrl || '';
+  const youtubeId = exercise?.youtubeId;
   
   useEffect(() => {
     // Reset states when imageUrl changes
@@ -88,11 +88,11 @@ const ExerciseDemonstration: React.FC<ExerciseDemonstrationProps> = ({
     }
 
     // For rest periods, display the rest image with special styling
-    if (isRestPeriod) {
+    if (isRest) {
       return (
         <div className="w-full aspect-video flex items-center justify-center overflow-hidden bg-gray-100 rounded-lg relative">
           <img 
-            src={imageUrl}
+            src={imageUrl || "https://musclewiki.com/media/uploads/male-cardio-treadmill-run-side.gif"}
             alt="Rest period" 
             className="w-full h-full object-cover" 
             loading="eager"
@@ -136,7 +136,7 @@ const ExerciseDemonstration: React.FC<ExerciseDemonstrationProps> = ({
       <div className="relative bg-gray-100">
         {renderContent()}
         
-        {!compact && !youtubeId && !isRestPeriod && (
+        {!compact && !youtubeId && !isRest && (
           <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-3">
             <div className="flex justify-between items-center">
               <h3 className="text-white font-medium truncate">{exerciseName}</h3>

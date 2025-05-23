@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Exercise } from '@/types/exercise';
 import {
   Carousel,
   CarouselContent,
@@ -10,10 +11,12 @@ import {
 import { Card } from '@/components/ui/card';
 
 interface ExerciseInstructionsProps {
-  instructions: string[];
+  exercise: Exercise;
 }
 
-const ExerciseInstructions: React.FC<ExerciseInstructionsProps> = ({ instructions }) => {
+const ExerciseInstructions: React.FC<ExerciseInstructionsProps> = ({ exercise }) => {
+  const instructions = exercise?.instructions || [];
+  
   if (!instructions || instructions.length === 0) {
     return (
       <Card className="p-4 border border-purple-100">
