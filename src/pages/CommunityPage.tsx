@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -204,6 +205,71 @@ const CommunityPage = () => {
         likes: 53,
         comments: 7,
         timePosted: "1 day ago"
+      },
+      // New sample posts
+      {
+        id: "4",
+        author: {
+          name: "David Chen",
+          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+          username: "david_chen"
+        },
+        content: "Hit a new PR today - 225lbs bench press! Been working toward this goal for months. Consistency and proper form really paid off. What fitness milestones are you working towards?",
+        image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        likes: 91,
+        comments: 14,
+        timePosted: "3 hours ago"
+      },
+      {
+        id: "5",
+        author: {
+          name: "Jessica Martinez",
+          avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+          username: "jess_fit"
+        },
+        content: "Just finished this amazing HIIT workout and I'm feeling energized! Mixing cardio with strength training has been a game-changer for my fitness journey. 30 minutes a day is all you need! Who else loves quick, intense workouts?",
+        likes: 64,
+        comments: 12,
+        timePosted: "7 hours ago"
+      },
+      {
+        id: "6",
+        author: {
+          name: "Robert Williams",
+          avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+          username: "rwilliams_coach"
+        },
+        content: "Reminder: Rest days are just as important as workout days! Recovery allows your muscles to repair and grow stronger. What's your favorite way to recover after intense training?",
+        image: "https://images.unsplash.com/photo-1620371350502-999e9a7d80a4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+        likes: 118,
+        comments: 23,
+        timePosted: "1 day ago"
+      },
+      {
+        id: "7",
+        author: {
+          name: "Aisha Johnson",
+          avatar: "https://images.unsplash.com/photo-1589571894960-20bbe2828d0a?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+          username: "aisha_j"
+        },
+        content: "Tried cooking with protein powder for the first time today - made these delicious protein pancakes! 20g protein per serving and they taste amazing with fresh berries. Recipe in the comments!",
+        image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        likes: 82,
+        comments: 31,
+        timePosted: "12 hours ago"
+      },
+      {
+        id: "8",
+        author: {
+          name: "Tyler Brooks",
+          avatar: "https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+          username: "tyler_lifts"
+        },
+        content: "Home gym setup complete! Finally got the power rack delivered. You don't need a fancy gym membership to get results - just commitment and the right equipment. Total investment: $1200, but worth every penny for the convenience.",
+        image: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        likes: 105,
+        comments: 18,
+        timePosted: "2 days ago"
       }
     ];
   };

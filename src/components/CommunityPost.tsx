@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,6 +27,8 @@ interface CommunityPostProps {
     author: Author;
     content: string;
     image?: string;
+    videoId?: string;
+    videoTitle?: string;
     likes: number;
     comments: number;
     timePosted: string;
@@ -297,6 +298,23 @@ const CommunityPost = ({ post }: CommunityPostProps) => {
         {post.image && (
           <div className="rounded-md overflow-hidden mb-2">
             <img src={post.image} alt="Post content" className="w-full object-cover" />
+          </div>
+        )}
+        {post.videoId && (
+          <div className="rounded-md overflow-hidden mb-2">
+            <div className="relative w-full pb-[56.25%]">
+              <iframe 
+                className="absolute top-0 left-0 w-full h-full rounded-lg"
+                src={`https://www.youtube.com/embed/${post.videoId}?modestbranding=1&rel=0`}
+                title={post.videoTitle || "Fitness video"}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+            {post.videoTitle && (
+              <p className="text-sm text-gray-500 mt-2">{post.videoTitle}</p>
+            )}
           </div>
         )}
       </CardContent>

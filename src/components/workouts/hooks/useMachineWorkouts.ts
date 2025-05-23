@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { fetchExercisesFromWger, transformWgerExercise } from '@/services/wgerApiService';
-import { getBestExerciseImageUrlSync, getExerciseYoutubeId } from '@/utils/exerciseImageUtils';
+import { getBestExerciseImageUrlSync, getExerciseYoutubeIdSync } from '@/utils/exerciseImageUtils';
 import { predefinedMachineWorkouts, dynamicMachineWorkoutTemplates } from '../machineWorkoutData';
 import { WorkoutData } from '@/types/workout';
 import { Exercise } from '@/types/exercise';
+import { batchFetchExerciseVideos } from '@/utils/youtubeApiUtils';
 
 export const useMachineWorkouts = () => {
   const [workouts, setWorkouts] = useState<WorkoutData[]>(predefinedMachineWorkouts.map(workout => ({
@@ -46,6 +46,10 @@ export const useMachineWorkouts = () => {
         
         console.log('Found machine exercises:', machineExercises.length);
         
+        // Pre-fetch YouTube videos for exercises
+        const videoMap = await batchFetchExerciseVideos(machineExercises);
+        console.log('Pre-fetched video IDs:', Object.keys(videoMap).length);
+        
         // Create workouts based on templates
         const apiWorkouts = dynamicMachineWorkoutTemplates.map(template => {
           // Filter exercises based on template criteria
@@ -67,8 +71,8 @@ export const useMachineWorkouts = () => {
           const workoutExercises = filteredExercises
             .slice(0, template.maxExercises)
             .map((ex: Exercise) => {
-              // Ensure each exercise has a YouTube ID
-              const youtubeId = getExerciseYoutubeId({
+              // Get YouTube ID from our pre-fetched map or try to get one
+              const youtubeId = videoMap[ex.name] || getExerciseYoutubeIdSync({
                 name: ex.name,
                 equipment: ex.equipment,
                 bodyPart: ex.bodyPart,
@@ -127,7 +131,7 @@ export const useMachineWorkouts = () => {
       const updatedExercises = workout.exercises.map(exercise => {
         if (exercise && !exercise.youtubeId && typeof exercise === 'object') {
           // Try to get a YouTube ID for this exercise
-          const youtubeId = getExerciseYoutubeId({
+          const youtubeId = getExerciseYoutubeIdSync({
             name: exercise.name,
             equipment: exercise.equipment,
             bodyPart: exercise.bodyPart,

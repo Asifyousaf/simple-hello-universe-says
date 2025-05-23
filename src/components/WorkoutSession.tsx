@@ -9,7 +9,7 @@ import WorkoutPackTabs from './workouts/WorkoutPackTabs';
 import WorkoutProgress, { WorkoutHeader } from './workouts/WorkoutProgress';
 import { WorkoutData } from '@/types/workout';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
-import { getBestExerciseImageUrlSync } from '@/utils/exerciseImageUtils';
+import { getBestExerciseImageUrlSync, getExerciseYoutubeIdSync } from '@/utils/exerciseImageUtils';
 import { Exercise } from '@/types/exercise';
 
 interface WorkoutSessionProps {
@@ -77,6 +77,13 @@ const WorkoutSession = ({ workout, onComplete, onCancel }: WorkoutSessionProps) 
         ...ex,
         id: ex.id || `exercise-${Math.random().toString(36).substring(2, 9)}`,
         secondaryMuscles: ex.secondaryMuscles || [],
+        // Try to get a YouTube ID for the exercise
+        youtubeId: ex.youtubeId || getExerciseYoutubeIdSync({
+          name: ex.name,
+          equipment: ex.equipment,
+          bodyPart: ex.bodyPart,
+          target: ex.target
+        })
       } as Exercise;
     });
   };
@@ -96,12 +103,21 @@ const WorkoutSession = ({ workout, onComplete, onCancel }: WorkoutSessionProps) 
       reps: 10
     };
     
+    // Try to get a YouTube ID for the exercise
+    const youtubeId = exercise.youtubeId || getExerciseYoutubeIdSync({
+      name: exercise.name,
+      equipment: exercise.equipment,
+      bodyPart: exercise.bodyPart,
+      target: exercise.target
+    });
+    
     return {
       ...exercise,
       id: exercise.id || `exercise-${Math.random().toString(36).substring(2, 9)}`,
       secondaryMuscles: exercise.secondaryMuscles || [],
       gifUrl: getBestExerciseImageUrlSync(exercise),
-      instructions: exercise.instructions || []
+      instructions: exercise.instructions || [],
+      youtubeId
     };
   };
 

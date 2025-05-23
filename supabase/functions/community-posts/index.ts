@@ -7,6 +7,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Sample fitness YouTube videos for post enrichment
+const fitnessYouTubeVideos = [
+  { id: "IODxDxX7oi4", title: "Perfect Push Up Form" },
+  { id: "gsNoPYwWXeE", title: "Proper Squat Technique" },
+  { id: "ytGaGIn3SjE", title: "Deadlift Tutorial" },
+  { id: "rT7DgCr-3pg", title: "Bench Press Guide" },
+  { id: "eGo4IYlbE5g", title: "Pull Up Progression" },
+  { id: "QOVaHwm-Q6U", title: "Lunge Variations" },
+  { id: "ykJmrZ5v0Oo", title: "Bicep Curl Form" },
+  { id: "nRiJVZDpdL0", title: "Tricep Extensions" },
+  { id: "qEwKCR5JCog", title: "Shoulder Press Technique" },
+];
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -38,8 +51,22 @@ serve(async (req) => {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
+        
+        // Enrich posts with fitness YouTube videos if they don't have images
+        const enrichedPosts = (data || []).map(post => {
+          if (!post.image_url && Math.random() > 0.6) {
+            // Add a random fitness video to ~40% of posts without images
+            const randomVideo = fitnessYouTubeVideos[Math.floor(Math.random() * fitnessYouTubeVideos.length)];
+            return {
+              ...post,
+              video_id: randomVideo.id,
+              video_title: randomVideo.title
+            };
+          }
+          return post;
+        });
 
-        return new Response(JSON.stringify(data || []), {
+        return new Response(JSON.stringify(enrichedPosts || []), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
           status: 200,
         });
