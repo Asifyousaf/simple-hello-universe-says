@@ -1,3 +1,4 @@
+
 import { Exercise } from '@/types/exercise';
 
 import { getExerciseYouTubeVideo } from './youtubeApiUtils';
@@ -18,8 +19,12 @@ const youtubeCache: {[key: string]: string} = {
   'leg press': 'IZxQVV3E7nE',
   'lat pulldown': 'CAwf7n6Luuc',
   'crunches': 'Xyd_fa5zoEU',
-  'mountain climber': 'cnyTQDSE884',
-  'jumping jacks': '2W4ZNSwoW_4'
+  'mountain climber': 'hZb6jTbCLeE', 
+  'jumping jacks': '2W4ZNSwoW_4',
+  'russian twist': '-BzNffL_6YE',
+  'burpee': 'TU8QYVW0gDU',
+  'push ups': 'ba8tr1NzwXU',
+  'air squats': 'CsPAsICeRsM'
 };
 
 // Function to get the best image URL for an exercise
@@ -52,6 +57,7 @@ export const getExerciseYoutubeId = async (exerciseInfo: {
   
   // Check cache first
   if (youtubeCache[key]) {
+    console.log(`Using cached YouTube ID for ${exerciseInfo.name}: ${youtubeCache[key]}`);
     return youtubeCache[key];
   }
   
@@ -68,13 +74,33 @@ export const getExerciseYoutubeId = async (exerciseInfo: {
     console.error('Error fetching YouTube video:', error);
   }
   
-  // Fallback to existing function logic
-  if (exerciseInfo.name.toLowerCase().includes('push up')) {
-    return 'IODxDxX7oi4';
+  // Fallback to known exercises
+  if (key.includes('push up') || key.includes('pushup')) {
+    return 'ba8tr1NzwXU';
   }
   
-  if (exerciseInfo.name.toLowerCase().includes('squat')) {
-    return 'gsNoPYwWXeE';
+  if (key.includes('squat')) {
+    return 'CsPAsICeRsM';
+  }
+  
+  if (key.includes('plank')) {
+    return 'pSHjTRCQxIw';
+  }
+  
+  if (key.includes('burpee')) {
+    return 'TU8QYVW0gDU';
+  }
+  
+  if (key.includes('lunge')) {
+    return 'QOVaHwm-Q6U';
+  }
+  
+  if (key.includes('mountain climber')) {
+    return 'hZb6jTbCLeE';
+  }
+  
+  if (key.includes('russian twist')) {
+    return '-BzNffL_6YE';
   }
   
   return null;
@@ -96,7 +122,36 @@ export const getExerciseYoutubeIdSync = (exerciseInfo: {
     return youtubeCache[key];
   }
   
-  // If not in cache, return null but trigger async fetch for next time
+  // Check common exercises
+  if (key.includes('push up') || key.includes('pushup')) {
+    return 'ba8tr1NzwXU';
+  }
+  
+  if (key.includes('squat')) {
+    return 'CsPAsICeRsM';
+  }
+  
+  if (key.includes('plank')) {
+    return 'pSHjTRCQxIw';
+  }
+  
+  if (key.includes('burpee')) {
+    return 'TU8QYVW0gDU';
+  }
+  
+  if (key.includes('lunge')) {
+    return 'QOVaHwm-Q6U';
+  }
+  
+  if (key.includes('mountain climber')) {
+    return 'hZb6jTbCLeE';
+  }
+  
+  if (key.includes('russian twist')) {
+    return '-BzNffL_6YE';
+  }
+  
+  // If not in cache, trigger async fetch for next time
   getExerciseYoutubeId(exerciseInfo).then(videoId => {
     if (videoId) {
       youtubeCache[key] = videoId;
@@ -105,3 +160,4 @@ export const getExerciseYoutubeIdSync = (exerciseInfo: {
   
   return null;
 };
+

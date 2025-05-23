@@ -18,6 +18,12 @@ const fitnessYouTubeVideos = [
   { id: "ykJmrZ5v0Oo", title: "Bicep Curl Form" },
   { id: "nRiJVZDpdL0", title: "Tricep Extensions" },
   { id: "qEwKCR5JCog", title: "Shoulder Press Technique" },
+  { id: "ba8tr1NzwXU", title: "Perfect Push-ups" },
+  { id: "CsPAsICeRsM", title: "How To Improve Squat Form" },
+  { id: "hZb6jTbCLeE", title: "How to Do Mountain Climbers" },
+  { id: "-BzNffL_6YE", title: "STOP Doing Russian Twists Like This!" },
+  { id: "TU8QYVW0gDU", title: "How To Do A Perfect Burpee" },
+  { id: "2W4ZNSwoW_4", title: "How To Do Jumping Jacks Properly" }
 ];
 
 serve(async (req) => {
@@ -54,8 +60,8 @@ serve(async (req) => {
         
         // Enrich posts with fitness YouTube videos if they don't have images
         const enrichedPosts = (data || []).map(post => {
-          if (!post.image_url && Math.random() > 0.6) {
-            // Add a random fitness video to ~40% of posts without images
+          if (!post.image_url && !post.video_id) {
+            // Add a random fitness video to posts without images or videos
             const randomVideo = fitnessYouTubeVideos[Math.floor(Math.random() * fitnessYouTubeVideos.length)];
             return {
               ...post,
@@ -89,6 +95,17 @@ serve(async (req) => {
         ...post,
         user_id: session.user.id
       };
+      
+      // Add a fitness video to post if no image and it mentions workout/fitness
+      if (!postData.image_url && 
+          (postData.content?.toLowerCase().includes('workout') || 
+           postData.content?.toLowerCase().includes('exercise') ||
+           postData.content?.toLowerCase().includes('fitness'))) {
+        
+        const randomVideo = fitnessYouTubeVideos[Math.floor(Math.random() * fitnessYouTubeVideos.length)];
+        postData.video_id = randomVideo.id;
+        postData.video_title = randomVideo.title;
+      }
       
       // Insert the post
       const { data, error } = await supabaseClient
@@ -132,3 +149,4 @@ serve(async (req) => {
     });
   }
 });
+

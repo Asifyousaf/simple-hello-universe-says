@@ -24,6 +24,7 @@ const ExerciseDemonstration: React.FC<ExerciseDemonstrationProps> = ({
 }) => {
   const [imgError, setImgError] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [videoLoading, setVideoLoading] = useState(true);
   
   const exerciseName = exercise?.name || 'Exercise';
   const imageUrl = exercise?.gifUrl || '';
@@ -35,20 +36,26 @@ const ExerciseDemonstration: React.FC<ExerciseDemonstrationProps> = ({
       setImgError(false);
       setIsInitialLoad(true);
     }
-  }, [imageUrl]);
+    if (youtubeId) {
+      setVideoLoading(true);
+    }
+  }, [imageUrl, youtubeId]);
   
   // Preload image to reduce flicker
   useEffect(() => {
-    if (imageUrl) {
+    if (imageUrl && !youtubeId) {
       const img = new Image();
       img.src = imageUrl;
       img.onload = () => setIsInitialLoad(false);
       img.onerror = () => {
         setImgError(true);
         setIsInitialLoad(false);
+        if (onImageError) {
+          onImageError();
+        }
       };
     }
-  }, [imageUrl]);
+  }, [imageUrl, youtubeId, onImageError]);
   
   const handleImageError = () => {
     if (!imgError) {
@@ -60,17 +67,28 @@ const ExerciseDemonstration: React.FC<ExerciseDemonstrationProps> = ({
     }
   };
   
+  const handleVideoLoad = () => {
+    setVideoLoading(false);
+  };
+  
   const renderContent = () => {
     if (youtubeId) {
       return (
         <div className="relative w-full pb-[56.25%]">
+          {videoLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+              <span className="ml-2 text-sm text-gray-600">Loading video...</span>
+            </div>
+          )}
           <iframe 
             className="absolute top-0 left-0 w-full h-full rounded-lg"
-            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&modestbranding=1&rel=0&controls=1`}
+            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=0&mute=0&controls=1&modestbranding=1&rel=0`}
             title={`${exerciseName} demonstration`}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
+            onLoad={handleVideoLoad}
           ></iframe>
         </div>
       );
@@ -136,7 +154,7 @@ const ExerciseDemonstration: React.FC<ExerciseDemonstrationProps> = ({
       <div className="relative bg-gray-100">
         {renderContent()}
         
-        {!compact && !youtubeId && !isRest && (
+        {!compact && !isRest && (
           <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-3">
             <div className="flex justify-between items-center">
               <h3 className="text-white font-medium truncate">{exerciseName}</h3>

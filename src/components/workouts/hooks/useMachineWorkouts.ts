@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { fetchExercisesFromWger, transformWgerExercise } from '@/services/wgerApiService';
 import { getBestExerciseImageUrlSync, getExerciseYoutubeIdSync } from '@/utils/exerciseImageUtils';
@@ -175,3 +176,4 @@ export const useMachineWorkouts = () => {
     loadingError
   };
 };
+
