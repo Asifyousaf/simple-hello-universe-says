@@ -12,6 +12,14 @@ export interface Exercise {
   target?: string; // Added property
   equipment?: string; // Added property
   type?: string; // Added property
+  id: string; // Added required property
+  secondaryMuscles: string[]; // Added required property
+  youtubeId?: string; // Added for YouTube videos
+  wikiImageUrl?: string; // Added for wiki images
+  isMachineExercise?: boolean;
+  machineType?: string;
+  muscleWikiId?: string;
+  displayPreference?: 'video' | 'photo' | 'auto';
 }
 
 export interface WorkoutExercisesData {
